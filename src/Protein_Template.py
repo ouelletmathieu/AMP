@@ -51,9 +51,12 @@ class Protein_Template:
     def save_template(self, path):
         print("todo not coded")
     
-    #cell = simulation cell [minx, maxx, miny, maxy, minz, maxz ]
-    #name of the file to save
-    def create_Lammps_file(self, path : str, type_mol : Literal["prion", "healthy"], cell = [-6,6,-6,6,-6,6]):        
+
+    def create_Lammps_file(self, path : str, type_mol : Literal["prion", "healthy"], cell = [-6,6,-6,6,-6,6]):  
+        """create the lamps file used for simulation 
+        cell = simulation cell [minx, maxx, miny, maxy, minz, maxz ]
+        name of the file to save
+        """     
         connections = self.connection
         mass = self.mass
         K = self.K
