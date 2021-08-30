@@ -1,7 +1,9 @@
+import numpy as np
 
 class Fake_file:
     """This class contain a fake file so we do not have to load a real file for testing 
     """
+    
     def __init__(self):
         # 0:boundary    1:inside 
         self.healty_position =       \

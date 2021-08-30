@@ -1,8 +1,14 @@
+from typing import TypeVar, Union, Literal
+import math
+import os
+
+
 class Protein_Template:
     """This is the template to construct a protein. It contain both the definition for the healty 
         one and the prion one. It is able to instantiate them in simulation. 
         Save them to file and load them from file.
     """
+
     def __init__(self):
         self.healty_position = None 
         self.prion_position = None
