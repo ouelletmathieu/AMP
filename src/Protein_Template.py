@@ -4,25 +4,25 @@ import os
 
 
 class Protein_Template:
-    """This is the template to construct a protein. It contain both the definition for the healty 
+    """This is the template to construct a protein. It contain both the definition for the healthy 
         one and the prion one. It is able to instantiate them in simulation. 
         Save them to file and load them from file.
     """
 
     def __init__(self):
-        self.healty_position = None 
+        self.healthy_position = None 
         self.prion_position = None
         self.connection = None
     
-    def set_healty_structure(self, position, connection = None):
-        """set the structure to be considered healty 
+    def set_healthy_structure(self, position, connection = None):
+        """set the structure to be considered healthy 
 
         Args:
             position (np.array([a,x,y])): atom position list in the form np.array([a , x, y ]) where a = 0 if outside and a=1 if inside
             connection ([[id1,id2],[...], .. ], optional):  if defined the previous connection pattern is over written. Else it is kept the same
     #            format: [[id1,id2],[...], .. ] id of connected node
         """
-        self.healty_position = position
+        self.healthy_position = position
         self.connection  = connection if connection  is not None else self.connection 
      
     def set_prion_structure(self, position, connection = None):
@@ -70,7 +70,7 @@ class Protein_Template:
         
         #set the right positions list
         if type_mol=="prion":
-            atom_list = self.healty_position
+            atom_list = self.healthy_position
         elif type_mol=="healthy":
             atom_list = self.prion_position
         else:

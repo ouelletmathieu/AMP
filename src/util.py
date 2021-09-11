@@ -75,4 +75,22 @@ class Util:
         return math.sqrt(total_dist)
 
 
+    def remove_dropbox_path(path):
+
+        splitted = path.split('/')
+        new_path = ""
+        try:
+            print("We are cleaning a dropbox path, this can cause problem is your file is on dropbox")
+            index = splitted.index('Dropbox')
+            for i in range(len(splitted)):
+                if i != index and i!=index+1:
+                    new_path =new_path + "/"+ splitted[i]
+        finally:
+            print("tried to remove the dropbox part of the path")
+
+        if new_path == "":
+            return path
+        else:
+            return new_path
+
     

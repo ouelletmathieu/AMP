@@ -20,12 +20,12 @@ class Test_Protein_Template(unittest.TestCase):
 
         #loading the fake file 
         ffile = Fake_file()
-        structure2.set_healty_structure(ffile.healty_position, ffile.connection)
+        structure2.set_healthy_structure(ffile.healthy_position, ffile.connection)
         structure2.set_interaction( (1,1) , (1,1), [])
         structure2.set_prion_structure(ffile.prion_position)
 
 
-        structure2.create_Lammps_file("test_healty_1_newclass.lj", type_mol = "healthy")
+        structure2.create_Lammps_file("test_healthy_1_newclass.lj", type_mol = "healthy")
         structure2.create_Lammps_file("test_prion_1_newclass.lj", type_mol = "prion")
 
         self.assertTrue(True)  

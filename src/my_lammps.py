@@ -87,7 +87,7 @@ class MyLammps:
             n_plot ([int]): number of time the position, angle etc are logged 
             logger ([type]): logger class that will contain the info (the output)
             stop_change_conf (bool, optional): if yes it will stop if there is a change of conformation detected at one of the plot time
-            id_conf (list, optional): either  ["healty", "prion"] if stop_change_conf is true. Defaults to [].
+            id_conf (list, optional): either  ["healthy", "prion"] if stop_change_conf is true. Defaults to [].
             square_angle_sum (int, optional): square_angle_sum min angular distance to be considered a change of conformation . Defaults to 0.
             random_seed (bool, optional): can put a given seed for testing and reproducibility Defaults to True.
 
@@ -104,6 +104,7 @@ class MyLammps:
             self.L.command("fix " + self.id_counter.next() + " all langevin "+ str(temperature) + " " + str(temperature)+ " " + str(damping)+ " " + str(1) )
                
         self.L.command("timestep " + str(max_time/n_step))
+
         step_per_plot = int(n_step/n_plot) 
         self.L.command("thermo " + str(int(step_per_plot)))
         

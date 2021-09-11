@@ -5,7 +5,7 @@ from error import ConvergenceError
 import random
 
 
-def find_appropriate_time_step(max_exponent, file_path, temperature , damping, max_time, healty_positions, prion_positions ):
+def find_appropriate_time_step(max_exponent, file_path, temperature , damping, max_time, healthy_positions, prion_positions, square_angle_sum = 25 ):
     """find the time step needed to have at least a simulation that converge up to max_time 
     
     Args:
@@ -14,7 +14,7 @@ def find_appropriate_time_step(max_exponent, file_path, temperature , damping, m
         temperature ([float]): temperature for the langevin simulation
         damping ([float]): damping for the langevin simulation 
         max_time ([float]): maximum time 
-        healty_positions (np.array([a , x, y ])): position of the atoms in the healty protein. atom position list in the form np.array([a , x, y ]) where a = 0 if outside and a=1 if inside
+        healthy_positions (np.array([a , x, y ])): position of the atoms in the healthy protein. atom position list in the form np.array([a , x, y ]) where a = 0 if outside and a=1 if inside
         prion_positions (np.array([a , x, y ])): position of the atoms in the prion protein. atom position list in the form np.array([a , x, y ]) where a = 0 if outside and a=1 if inside
 
     Returns:
@@ -35,10 +35,12 @@ def find_appropriate_time_step(max_exponent, file_path, temperature , damping, m
             L_main = PyLammps()
             id_counter = ID_counter()
             L = MyLammps(L_main,id_counter )
+            print("\n\n "+ file_path + "\n\n ")
             L.create_molecule_2d(file_path)
-            main_logger = Logger(L, [healty_positions, prion_positions], id_struct_to_compare=["healty", "prion"])
+            main_logger = Logger(L, [healthy_positions, prion_positions], id_struct_to_compare=["healthy", "prion"])
             main_logger.log(0)   
-            time = L.run_brownian(temperature, damping, max_time, n_step, n_plot, main_logger,  stop_change_conf = False, id_conf = [], square_angle_sum = 25, random_seed = True)
+            time = L.run_brownian(temperature, damping, max_time, n_step, n_plot, main_logger,  stop_change_conf = False, id_conf = [], square_angle_sum=square_angle_sum, random_seed = True)
+            
 
             if time == -1:
                 converged = False
@@ -126,12 +128,12 @@ def _go_lower(highest_stable, lowest_unstable, simulate, max_test, max_time, tar
             return _go_lower(new_temp, lowest_unstable, simulate, max_test, max_time, target_precision, max_try, try_nb)
     
     
-def get_protein_max_stability_temp(file_path, healty_positions, prion_positions , max_temp_totest, square_angle_sum,  max_time= 30, n_plot = 30, nb_needed_for_stability = 10,  max_try = 5):
-    """find the maximal temperature for the healty and prion protein given a maximal distance (square_angle_sum)
+def get_protein_max_stability_temp(file_path, healthy_positions, prion_positions,to_check, max_temp_totest, square_angle_sum,  max_time= 30, n_plot = 30, nb_needed_for_stability = 10,  max_try = 5):
+    """find the maximal temperature for the healthy and prion protein given a maximal distance (square_angle_sum)
 
     Args:
         file_path ([string]): file_path 
-        healty_positions (np.array([a , x, y ])): position of the atoms in the healty protein. atom position list in the form np.array([a , x, y ]) where a = 0 if outside and a=1 if inside
+        healthy_positions (np.array([a , x, y ])): position of the atoms in the healthy protein. atom position list in the form np.array([a , x, y ]) where a = 0 if outside and a=1 if inside
         prion_positions (np.array([a , x, y ])): position of the atoms in the prion protein. atom position list in the form np.array([a , x, y ]) where a = 0 if outside and a=1 if inside
 
         max_temp_totest ([type]): max temperature to test for stability (need to be unstable)
@@ -144,11 +146,17 @@ def get_protein_max_stability_temp(file_path, healty_positions, prion_positions 
     Returns:
         [type]: [description]
     """
-        
+    if to_check not in ['prion','healthy']:
+        raise ValueError("to_check is either prion or healthy")
+
     damping = 1 
     min_temp_totest = 0 
     target_precision = 0.01*max_temp_totest
-    n_step =  find_appropriate_time_step(10, file_path,  max_temp_totest , damping, max_time,  healty_positions, prion_positions, )
+    n_step =  find_appropriate_time_step(10, file_path,  max_temp_totest , damping, max_time,  healthy_positions, prion_positions )
+    
+    for i in range(1000000):
+        print(n_step)
+    
     nb_try = 0
 
     #define the simulation function
@@ -158,9 +166,9 @@ def get_protein_max_stability_temp(file_path, healty_positions, prion_positions 
         id_counter = ID_counter()
         L = MyLammps(L_main,id_counter )
         L.create_molecule_2d(file_path)
-        main_logger = Logger(L, [healty_positions, prion_positions], id_struct_to_compare=["healty", "prion"])
-        main_logger.log(0)    
-        time = L.run_brownian(temperature, damping, max_time, n_step, n_plot, main_logger,  stop_change_conf = True, id_conf ="prion", square_angle_sum=square_angle_sum, random_seed = True)
+        main_logger = Logger(L, [healthy_positions, prion_positions], id_struct_to_compare=["healthy", "prion"])
+        main_logger.log(0)
+        time = L.run_brownian(temperature, damping, max_time, n_step, n_plot, main_logger,  stop_change_conf = True, id_conf = to_check, square_angle_sum=square_angle_sum, random_seed = True)
         return time
 
 

@@ -6,7 +6,7 @@ class Fake_file:
     
     def __init__(self):
         # 0:boundary    1:inside 
-        self.healty_position =       \
+        self.healthy_position =       \
             np.array([                \
                 [0, 0.5,     0.1340], \
                 [0, -0.5,    0.1340], \
