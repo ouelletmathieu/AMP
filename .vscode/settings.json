@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./src/polygon/lammps",
+        "./src/polygon/lammps_util"
+    ]
+}
