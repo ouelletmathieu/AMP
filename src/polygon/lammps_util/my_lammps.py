@@ -118,7 +118,7 @@ class MyLammps:
         self.L.command("timestep " + str(max_time/n_step))
 
         step_per_plot = int(n_step/n_plot) 
-        self.L.command("thermo " + str(int(step_per_plot)))
+        #self.L.command("thermo " + str(int(step_per_plot)))
         
         for i in range(n_plot):
 

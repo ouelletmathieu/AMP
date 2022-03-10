@@ -1,0 +1,31 @@
+"filename", "language", "Python", "JSON", "comment", "blank", "total"
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/NEB_main.py", "Python", 9, 0, 0, 8, 17
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/NEB_test.py", "Python", -11, 0, -4, -8, -23
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/analysis.py", "Python", -101, 0, -62, -28, -191
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/error.py", "Python", -5, 0, -2, -5, -12
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/run_simulation.py", "Python", -62, 0, -2, -28, -92
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/temperature_stability.py", "Python", -31, 0, -4, -16, -51
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/test_prion.ipynb", "JSON", 0, -1468, 0, -1, -1469
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/test_protein_template.py", "Python", -20, 0, -2, -15, -37
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/test_temperature_stability.py", "Python", -57, 0, 0, -29, -86
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/logger.py", "Python", -109, 0, -20, -61, -190
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/my_lammps.py", "Python", -83, 0, -52, -30, -165
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/protein_template.py", "Python", -101, 0, -41, -26, -168
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/test_file.py", "Python", -45, 0, -3, -7, -55
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/util.py", "Python", -48, 0, -31, -17, -96
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/Nudged_Elastic_Band.py", "Python", 107, 0, 3, 46, 156
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/__init__.py", "Python", 0, 0, 0, 1, 1
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/analysis.py", "Python", 109, 0, 62, 28, 199
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/error.py", "Python", 5, 0, 2, 5, 12
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/run_simulation.py", "Python", 62, 0, 2, 28, 92
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/temperature_stability.py", "Python", 31, 0, 4, 16, 51
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/test_prion.ipynb", "JSON", 0, 1468, 0, 1, 1469
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/test_protein_template.py", "Python", 20, 0, 2, 15, 37
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/test_temperature_stability.py", "Python", 57, 0, 0, 29, 86
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/logger.py", "Python", 109, 0, 20, 61, 190
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/my_lammps.py", "Python", 82, 0, 53, 30, 165
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/protein_template.py", "Python", 101, 0, 41, 26, 168
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/test_file.py", "Python", 45, 0, 3, 7, 55
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/util.py", "Python", 48, 0, 31, 17, 96
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/poly_main.ipynb", "JSON", 0, 11354, 0, 0, 11354
+"Total", "-", 112, 11354, 0, 47, 11513

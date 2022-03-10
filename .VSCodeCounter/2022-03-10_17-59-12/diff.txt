@@ -1,0 +1,38 @@
+Date : 2022-03-10 17:59:12
+Directory : /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP
+Total : 9 files,  -9350 codes, 395 comments, 307 blanks, all -8648 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Python   |          8 |      1,291 |        395 |        307 |      1,993 |
+| JSON     |          1 |    -10,641 |          0 |          0 |    -10,641 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                        | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                           |          9 |     -9,350 |        395 |        307 |     -8,648 |
+| src                                                                                                                         |          9 |     -9,350 |        395 |        307 |     -8,648 |
+| src/polygon                                                                                                                 |          9 |     -9,350 |        395 |        307 |     -8,648 |
+| src/polygon/lammps_util                                                                                                     |          1 |          1 |          0 |          0 |          1 |
+| src/polygon/to_delete                                                                                                       |          2 |        886 |        320 |        198 |      1,404 |
++-----------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                                    | language | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/NEB_main.py                        | Python   |         16 |          9 |          6 |         31 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/database.py                        | Python   |        154 |         30 |         23 |        207 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/internal_node_main.py              | Python   |        167 |         18 |         48 |        233 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/Nudged_Elastic_Band.py | Python   |          1 |          0 |          0 |          1 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/poly_main.ipynb                    | JSON     |    -10,641 |          0 |          0 |    -10,641 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/polygon_matching_main.py           | Python   |         67 |         18 |         31 |        116 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/stability_main.py                  | Python   |          0 |          0 |          1 |          1 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/to_delete/dump.py                  | Python   |        842 |        304 |        186 |      1,332 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/to_delete/neb_final.py             | Python   |         44 |         16 |         12 |         72 |
+| Total                                                                                                                       |          |     -9,350 |        395 |        307 |     -8,648 |
++-----------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

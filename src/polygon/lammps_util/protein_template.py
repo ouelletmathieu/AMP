@@ -70,9 +70,9 @@ class Protein_Template:
         
         #set the right positions list
         if type_mol=="prion":
-            atom_list = self.healthy_position
-        elif type_mol=="healthy":
             atom_list = self.prion_position
+        elif type_mol=="healthy":
+            atom_list = self.healthy_position
         else:
             print("type is not valid ")
             raise ValueError("type is not valid either prion or healthy")

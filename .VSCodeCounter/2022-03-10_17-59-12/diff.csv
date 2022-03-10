@@ -1,0 +1,11 @@
+"filename", "language", "Python", "JSON", "comment", "blank", "total"
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/NEB_main.py", "Python", 16, 0, 9, 6, 31
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/database.py", "Python", 154, 0, 30, 23, 207
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/internal_node_main.py", "Python", 167, 0, 18, 48, 233
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/Nudged_Elastic_Band.py", "Python", 1, 0, 0, 0, 1
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/poly_main.ipynb", "JSON", 0, -10641, 0, 0, -10641
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/polygon_matching_main.py", "Python", 67, 0, 18, 31, 116
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/stability_main.py", "Python", 0, 0, 0, 1, 1
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/to_delete/dump.py", "Python", 842, 0, 304, 186, 1332
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/to_delete/neb_final.py", "Python", 44, 0, 16, 12, 72
+"Total", "-", 1291, -10641, 395, 307, -8648

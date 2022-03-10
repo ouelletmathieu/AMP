@@ -1,0 +1,60 @@
+Date : 2022-03-08 15:29:28
+Directory : /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP
+Total : 29 files,  11466 codes, 0 comments, 47 blanks, all 11513 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| JSON     |          3 |     11,354 |          0 |          0 |     11,354 |
+| Python   |         26 |        112 |          0 |         47 |        159 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                        | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                           |         29 |     11,466 |          0 |         47 |     11,513 |
+| src                                                                                                                                         |         29 |     11,466 |          0 |         47 |     11,513 |
+| src/polygon                                                                                                                                 |         29 |     11,466 |          0 |         47 |     11,513 |
+| src/polygon/lammps                                                                                                                          |         12 |     -2,130 |       -219 |       -263 |     -2,612 |
+| src/polygon/lammps/examples                                                                                                                 |          5 |     -1,638 |         -8 |        -89 |     -1,735 |
+| src/polygon/lammps_util                                                                                                                     |         14 |      2,244 |        223 |        310 |      2,777 |
+| src/polygon/lammps_util/examples                                                                                                            |          5 |      1,638 |          8 |         89 |      1,735 |
++---------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                                                    | language | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/NEB_main.py                                        | Python   |          9 |          0 |          8 |         17 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/NEB_test.py                                        | Python   |        -11 |         -4 |         -8 |        -23 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/analysis.py                                 | Python   |       -101 |        -62 |        -28 |       -191 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/error.py                                    | Python   |         -5 |         -2 |         -5 |        -12 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/run_simulation.py                  | Python   |        -62 |         -2 |        -28 |        -92 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/temperature_stability.py           | Python   |        -31 |         -4 |        -16 |        -51 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/test_prion.ipynb                   | JSON     |     -1,468 |          0 |         -1 |     -1,469 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/test_protein_template.py           | Python   |        -20 |         -2 |        -15 |        -37 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/examples/test_temperature_stability.py      | Python   |        -57 |          0 |        -29 |        -86 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/logger.py                                   | Python   |       -109 |        -20 |        -61 |       -190 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/my_lammps.py                                | Python   |        -83 |        -52 |        -30 |       -165 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/protein_template.py                         | Python   |       -101 |        -41 |        -26 |       -168 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/test_file.py                                | Python   |        -45 |         -3 |         -7 |        -55 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps/util.py                                     | Python   |        -48 |        -31 |        -17 |        -96 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/Nudged_Elastic_Band.py                 | Python   |        107 |          3 |         46 |        156 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/__init__.py                            | Python   |          0 |          0 |          1 |          1 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/analysis.py                            | Python   |        109 |         62 |         28 |        199 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/error.py                               | Python   |          5 |          2 |          5 |         12 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/run_simulation.py             | Python   |         62 |          2 |         28 |         92 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/temperature_stability.py      | Python   |         31 |          4 |         16 |         51 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/test_prion.ipynb              | JSON     |      1,468 |          0 |          1 |      1,469 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/test_protein_template.py      | Python   |         20 |          2 |         15 |         37 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/examples/test_temperature_stability.py | Python   |         57 |          0 |         29 |         86 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/logger.py                              | Python   |        109 |         20 |         61 |        190 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/my_lammps.py                           | Python   |         82 |         53 |         30 |        165 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/protein_template.py                    | Python   |        101 |         41 |         26 |        168 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/test_file.py                           | Python   |         45 |          3 |          7 |         55 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/util.py                                | Python   |         48 |         31 |         17 |         96 |
+| /Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/poly_main.ipynb                                    | JSON     |     11,354 |          0 |          0 |     11,354 |
+| Total                                                                                                                                       |          |     11,466 |          0 |         47 |     11,513 |
++---------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

@@ -24,7 +24,7 @@ Xu = zeros(2*d,k);
 fV = zeros(1,k);
 
 % Optimization Options
-options = optimset('TolFun', 1e-32, 'TolX', 1e-32, 'MaxFunEvals',1000000);
+options = optimset('TolFun', 1e-6, 'TolX', 1e-6, 'MaxFunEvals',10000, 'Display', 'off');
 
 % Iterate through each unspecified node initial guess
 for i = 1:k

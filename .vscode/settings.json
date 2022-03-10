@@ -2,5 +2,6 @@
     "python.analysis.extraPaths": [
         "./src/polygon/lammps",
         "./src/polygon/lammps_util"
-    ]
+    ],
+    "jupyter.jupyterServerType": "local"
 }
