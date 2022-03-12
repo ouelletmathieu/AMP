@@ -165,3 +165,43 @@ class Protein_Template:
             print("please pass the coeff in the simulation constructor")
             raise ValueError("lj parameter are now passed through the simulator")
         f.close()
+
+
+
+    def get_bond_length(self, type_mol : Literal["prion", "healthy"]):
+
+        connections = self.connection
+        K = self.K
+        lenght_list, type_list = [], []
+       
+
+        #set the right positions list
+        if type_mol=="prion":
+            atom_list = self.prion_position
+        elif type_mol=="healthy":
+            atom_list = self.healthy_position
+        else:
+            print("type is not valid ")
+            raise ValueError("type is not valid either prion or healthy")       
+
+        for i in range(connections.shape[0]):
+            atom1 = connections[i,0]
+            atom2 = connections[i,1]
+
+            atom1_type = atom_list[atom1,0]
+            atom1_pos =  (atom_list[atom1,1],atom_list[atom1,2])
+
+            atom2_type = atom_list[atom2,0]
+            atom2_pos =  (atom_list[atom2,1],atom_list[atom2,2])        
+            type = 0
+            if atom1_type!=atom2_type:
+                type = 1
+            type_list.append(type)
+            #length are computed here
+            lenght = math.sqrt((atom1_pos[0]-atom2_pos[0])**2 + (atom1_pos[1]-atom2_pos[1])**2)
+            lenght_list.append(lenght)
+        
+        return lenght_list, type_list
+
+
+    

@@ -1,4 +1,5 @@
 import random
+from lammps import PyLammps
 
 class ID_counter:
     """simple class to count lammps call id
@@ -17,7 +18,7 @@ class MyLammps:
     
     def __init__(self, lammps, id_counter):
         self.id_counter = id_counter
-        self.L = lammps
+        self.L : PyLammps = lammps
         
     #
     def create_molecule_2d(self,file_path):
@@ -106,7 +107,8 @@ class MyLammps:
         Returns:
             [float]: return the max time the simulation reached if stop_change_conf is true it return the time 
         """
-             
+        self.L.command("thermo 100000")
+        
         self.L.command("fix " + self.id_counter.next() + " all   nve")   ###NVE ensemble
         self.L.command("fix " + self.id_counter.next() + " all enforce2d")
         

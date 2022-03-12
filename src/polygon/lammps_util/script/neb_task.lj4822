@@ -1,0 +1,18 @@
+# LAMMPS task file for neb 
+ 
+      dimension   2
+     atom_style bond
+     boundary   f f p
+     bond_style harmonic
+     atom_modify	map array sort 0 0.0
+
+     variable  u uloop 100
+     read_data  src/polygon/temp/h_-7792000767273114871_4570857935089084099.txt
+     timestep  0.1
+     fix 1 all neb 1.0 parallel ideal
+
+     thermo 100
+     fix 2 all enforce2d
+     dump 1 all atom 10 src/polygon/temp/4822dump.neb.$u
+      min_style quickmin
+     neb 1e-08 0.0 2000 2000 40 final src/polygon/lammps_util/script/prion_neb_pos.lj4822

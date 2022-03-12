@@ -180,7 +180,7 @@ class Database():
         self.db_parameter.commit()
 
     # sol list [(Xu, conn)]
-    def add_solution(self, key_healthy, key_prion, sol_list):
+    def add_solution(self, key_healthy, key_prion, sol_list, nb_tested):
 
         # if solution are already in the dict
         if 'sols' in self.db_pairs[key_healthy][key_prion]:
@@ -192,6 +192,11 @@ class Database():
             dict_sol[hash_key] = {
                 'inside_node': inside_node, 'conn': connection}
 
+        if 'nb_try' in dict_sol:
+            dict_sol['nb_try'] = dict_sol['nb_try']+nb_tested
+        else:
+            dict_sol['nb_try'] = nb_tested
+
         # just the last update would probably be needed
         pair_dict = self.db_pairs[key_healthy]
         pair_data = pair_dict[key_prion]
@@ -201,20 +206,28 @@ class Database():
         self.db_pairs[key_healthy] = pair_dict
         self.db_pairs.commit()
 
-    def get_all_sol_key(self, key_healthy, key_prion):
+    def get_all_sol(self, key_healthy, key_prion):
+        list_key = []
         if "sols" in self.db_pairs[key_healthy][key_prion]:
-            return self.db_pairs[key_healthy][key_prion]["sols"].keys()
-        else:
-            return []
+            list_sol_key = list(self.db_pairs[key_healthy][key_prion]["sols"].keys())
+            if 'nb_try' in list_sol_key:
+                print(list_sol_key)
+                list_sol_key.remove('nb_try')
+            if len(list_sol_key)>0:
+                for key in  list_sol_key:
+                    if len(self.db_pairs[key_healthy][key_prion]["sols"][key]['inside_node'])>0:
+                        list_key.append(key)
+        return list_key, [self.db_pairs[key_healthy][key_prion]["sols"][key] for key in list_key ] 
+            
 
     def load_protein_pair(self, key_healthy, key_prion, sol_key):
 
         pair_data = self.db_pairs[key_healthy][key_prion]
         healthy_pos = self.db_pairs[key_healthy]['struct_healthy']
         prion_pos = pair_data['struct']
-        translation = pair_data[sol_key]['translation']
-        inside_node = pair_data[sol_key]['inside_node']
-        conn = pair_data[sol_key]['conn']
+        translation = pair_data['translation']
+        inside_node = pair_data['sols'][sol_key]['inside_node']
+        conn = pair_data['sols'][sol_key]['conn']
         protein_pair = protein_template.Protein_Template()
 
         # translate_healthy_position
@@ -233,7 +246,7 @@ class Database():
                 [0, pos_healthy_trans[i][0], pos_healthy_trans[i][1]])
             prion_pos_protein_format.append(
                 [0, prion_pos[i][0], prion_pos[i][1]])
-
+        print(inside_node)
         in_healthy_x, in_healthy_y = inside_node[0], inside_node[1]
         in_prion_x, in_prion_y = inside_node[2], inside_node[3]
         # add inside node
@@ -261,6 +274,7 @@ class Database():
     ##########################
     #     Pairs stability    #
     ##########################
+
     def set_up_stability(self, n_test_temperature, start_temp, max_temp, maxtime):
 
         self.db_parameter['n_test_temperature'] = n_test_temperature
@@ -274,6 +288,76 @@ class Database():
         self.db_parameter['K'] = K
         self.db_parameter.commit()
 
+    def add_stability(self, key_healthy, key_prion, sol_key, mbr_triplet_healthy, mbr_triplet_prion):
+        #no need to open it slowly like that
+        pair_dict = self.db_pairs[key_healthy]
+        pair_prion = pair_dict[key_prion]
+        pair_solution = pair_prion['sols']
+        solution = pair_solution[sol_key]
+        #store the triplet
+        solution['stability_prion']   = mbr_triplet_prion
+        solution['stability_healthy'] = mbr_triplet_healthy
+        #waste of time only the last one is probably needed
+        pair_solution[sol_key] = solution
+        pair_prion['sols'] = pair_solution
+        pair_dict[key_prion] = pair_prion
+        self.db_pairs[key_healthy] = pair_dict
+        #commit
+        self.db_pairs.commit()
+
+    def add_RMS_stability(self, key_healthy, key_prion, sol_key,temperature_list,  healthy_angle_list, prion_angle_list, RMS_hp):
+        #no need to open it slowly like that
+        pair_dict = self.db_pairs[key_healthy]
+        pair_prion = pair_dict[key_prion]
+        pair_solution = pair_prion['sols']
+        solution = pair_solution[sol_key]
+        #store the triplet
+        solution['RMS_stability_temp']   = temperature_list
+        solution['RMS_stability_healthy'] = healthy_angle_list
+        solution['RMS_stability_prion']   = prion_angle_list
+        solution['RMS_hp'] = RMS_hp
+        #waste of time only the last one is probably needed
+        pair_solution[sol_key] = solution
+        pair_prion['sols'] = pair_solution
+        pair_dict[key_prion] = pair_prion
+        self.db_pairs[key_healthy] = pair_dict
+        #commit
+        self.db_pairs.commit()
+
+    def add_NEB_HP(self, key_healthy, key_prion, sol_key, reaction_coordinate, energy_list):
+        #no need to open it slowly like that
+        pair_dict = self.db_pairs[key_healthy]
+        pair_prion = pair_dict[key_prion]
+        pair_solution = pair_prion['sols']
+        solution = pair_solution[sol_key]
+        #store the triplet
+        solution['NEB_HP_reaction_coordinate']   = reaction_coordinate
+        solution['NEB_HP_energy'] = energy_list
+        #waste of time only the last one is probably needed
+        pair_solution[sol_key] = solution
+        pair_prion['sols'] = pair_solution
+        pair_dict[key_prion] = pair_prion
+        self.db_pairs[key_healthy] = pair_dict
+        #commit
+        self.db_pairs.commit() 
+
+
+    def delete_NEB_HP(self, key_healthy, key_prion, sol_key):
+        #no need to open it slowly like that
+        pair_dict = self.db_pairs[key_healthy]
+        pair_prion = pair_dict[key_prion]
+        pair_solution = pair_prion['sols']
+        solution = pair_solution[sol_key]
+        #store the triplet
+        del solution['NEB_HP_reaction_coordinate']  
+        del solution['NEB_HP_energy']
+        #waste of time only the last one is probably needed
+        pair_solution[sol_key] = solution
+        pair_prion['sols'] = pair_solution
+        pair_dict[key_prion] = pair_prion
+        self.db_pairs[key_healthy] = pair_dict
+        #commit
+        self.db_pairs.commit() 
 
     ##########################
     #          lock          #

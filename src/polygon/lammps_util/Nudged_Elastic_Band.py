@@ -46,7 +46,7 @@ class Nudged_Elastic_Band:
         f.write(sep + "atom_modify	map array sort 0 0.0"+"\n")
         f.write("\n")
 
-        f.write(sep + "variable  u uloop 20\n")
+        f.write(sep + "variable  u uloop 100\n")
         f.write(sep +"read_data  " + init_path + "\n")
         f.write(sep +"timestep  "+ str(timestep) + "\n")
         f.write(sep +"fix 1 all neb " + str(spring_inter_replica) + " parallel ideal"+ "\n")
@@ -154,3 +154,30 @@ class Nudged_Elastic_Band:
 
         plt.plot(rc_list, energy_list)
         plt.show()
+
+
+    @staticmethod    
+    def get_energy(log_file_path):
+        
+        file1 = open(log_file_path, 'r')
+        Lines = file1.readlines()
+
+        timestep_id = [] 
+        last_line = Lines[-1]
+        splitted = last_line.split()
+        map_object = map(float, splitted)
+        list_of_float = list(map_object)
+
+        list_of_float = list_of_float[9:]
+        n_replica = int(len(list_of_float)/2)
+
+        rc_list = []
+        energy_list = []
+
+        for i in range(len(list_of_float)):
+            if i%2==0:
+                rc_list.append(list_of_float[i])
+            else:
+                energy_list.append(list_of_float[i])
+
+        return rc_list, energy_list

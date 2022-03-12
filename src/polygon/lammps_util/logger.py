@@ -1,3 +1,4 @@
+import math
 from .util import Util
 import matplotlib.pyplot as plt
 
@@ -76,6 +77,8 @@ class Logger:
         
         return total
         
+  
+
     ###################################
     #             PLOTTING            #
     ###################################
@@ -187,3 +190,17 @@ class Logger:
         
         return angle_formatted
 
+
+    def get_RMS_angle_difference_all_time(self):
+            
+            angle_n = len(self.angle_list[0])
+            angle_sum = 0
+            nb_angle = 0
+
+            for i in range(len(self.angle_list)):
+                for j in range(angle_n):
+                    nb_angle+=1
+                    angle_sum += (self.angle_list[i][j] - self.angle_list[0][j])**2 
+            
+            return math.sqrt(angle_sum/nb_angle)
+            
