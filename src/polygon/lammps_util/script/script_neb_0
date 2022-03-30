@@ -1,0 +1,4 @@
+#!/bin/bash 
+
+export TMPDIR=/tmp 
+mpirun -np 80 --oversubscribe lmp_mpi  -partition 80x1  -log temp/log.lammps_0  -plog temp/log.lammps_0  -pscreen temp/screen_0  -in lammps_util/script/neb_task.lj0

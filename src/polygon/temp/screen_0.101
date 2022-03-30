@@ -1,0 +1,4 @@
+LAMMPS (29 Oct 2020)
+Processor partition = 101
+ERROR: Universe/uloop variable count < # of partitions (../variable.cpp:263)
+Last command:      variable  u uloop 100

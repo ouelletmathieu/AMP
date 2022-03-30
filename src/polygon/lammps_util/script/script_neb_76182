@@ -1,0 +1,4 @@
+#!/bin/bash 
+
+export TMPDIR=/tmp 
+mpirun -np 12 --oversubscribe lmp_mpi  -partition 12x1  -log src/polygon/temp/log.lammps_76182  -plog src/polygon/temp/log.lammps_76182  -pscreen src/polygon/temp/screen_76182  -in src/polygon/lammps_util/script/neb_task.lj76182

@@ -1,0 +1,160 @@
+LAMMPS (29 Oct 2020)
+Processor partition = 63
+# LAMMPS task file for neb
+
+      dimension   2
+     atom_style bond
+     boundary   f f p
+     bond_style harmonic
+     atom_modify	map array sort 0 0.0
+
+     variable  u uloop 100
+     read_data  temp/h_-6779599749597012937_-7482915513354146445_0.txt
+Reading data file ...
+  orthogonal box = (-6.0000000 -6.0000000 -6.0000000) to (6.0000000 6.0000000 6.0000000)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  7 atoms
+  scanning bonds ...
+  3 = max bonds/atom
+  reading bonds ...
+  11 bonds
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0.0      0.0      0.0     
+  special bond factors coul:  0.0      0.0      0.0     
+     4 = max # of 1-2 neighbors
+     9 = max # of 1-3 neighbors
+    28 = max # of 1-4 neighbors
+     6 = max # of special neighbors
+  special bonds CPU = 0.000 seconds
+  read_data CPU = 0.030 seconds
+     timestep  0.1
+     fix 1 all neb 1.0 parallel ideal
+
+     thermo 100
+     fix 2 all enforce2d
+     dump 1 all atom 10 temp/0dump.neb.$u
+     dump 1 all atom 10 temp/0dump.neb.64
+      min_style quickmin
+     neb 1e-08 0.0 2000 2000 40 final lammps_util/script/prion_neb_pos.lj0
+WARNING: Using 'neigh_modify every 1 delay 0 check yes' setting during minimization (../min.cpp:187)
+Per MPI rank memory allocation (min/avg/max) = 4.840 | 4.840 | 4.840 Mbytes
+Step Temp E_pair E_mol TotEng Press 
+       0            0            0   0.02701316   0.02701316  0.009221212 
+     100 8.4766934e-07            0 3.228893e-06 3.9554667e-06 1.0806908e-06 
+     200 6.0645147e-07            0 1.3594162e-06 1.8792318e-06 6.1522705e-07 
+     300 2.6276628e-08            0 4.3032504e-07 4.5284787e-07 3.2430266e-07 
+     400 6.893578e-08            0 1.1202843e-07 1.7111624e-07 1.6592136e-07 
+     500 2.5864951e-08            0 2.4784409e-08 4.6954367e-08 7.7102652e-08 
+     600 2.1912064e-08            0 5.0746094e-09 2.3856378e-08 3.733049e-08 
+     700 2.0924387e-08            0 1.0083268e-09 1.8943516e-08 1.3117665e-08 
+     800 6.025299e-09            0 2.463136e-10 5.4108556e-09 2.7622496e-09 
+     900 3.921517e-09            0 6.1317487e-11 3.4226178e-09 -3.2769928e-09 
+    1000 5.2709355e-09            0 1.5458463e-11 4.5334032e-09 5.6865619e-09 
+    1100 6.7600319e-09            0 3.8393377e-12 5.7981524e-09 9.7869095e-09 
+    1200 4.6573133e-09            0 9.6916253e-13 3.992952e-09 7.098279e-09 
+    1300 3.7183424e-09            0 2.6261289e-13 3.1874132e-09 6.3386095e-09 
+    1400 3.3034712e-09            0 8.6578753e-14 2.8316333e-09 6.8699014e-09 
+    1500 2.097722e-09            0 4.5010863e-14 1.7980924e-09 7.144598e-09 
+    1600 1.3488086e-09            0 2.3287872e-14 1.1561449e-09 -4.1785873e-09 
+    1700 1.1596985e-09            0 9.4626468e-15 9.9403675e-10 3.5573783e-09 
+    1800 7.2056462e-10            0 4.305415e-15 6.1763112e-10 7.3735787e-10 
+    1900 3.2437171e-10            0 3.2480848e-15 2.7803614e-10 1.0605594e-09 
+    2000 4.6335955e-10            0 1.0106045e-14 3.9717543e-10 4.5337602e-09 
+Loop time of 12.3188 on 1 procs for 2000 steps with 7 atoms
+
+3.9% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max iterations
+  Energy initial, next-to-last, final = 
+    0.0270131596814273 7.6095443467114e-15 1.01060450671254e-14
+  Force two-norm initial, final = 1.6527874 2.8993496e-05
+  Force max component initial, final = 0.78112828 1.7244371e-05
+  Final line search alpha, max atom move = 0.0000000 0.0000000
+  Iterations, force evaluations = 2000 2000
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Bond    | 0.002791   | 0.002791   | 0.002791   |   0.0 |  0.02
+Neigh   | 3e-06      | 3e-06      | 3e-06      |   0.0 |  0.00
+Comm    | 0.001555   | 0.001555   | 0.001555   |   0.0 |  0.01
+Output  | 0.19605    | 0.19605    | 0.19605    |   0.0 |  1.59
+Modify  | 3.8037     | 3.8037     | 3.8037     |   0.0 | 30.88
+Other   |            | 8.315      |            |       | 67.50
+
+Nlocal:        7.00000 ave           7 max           7 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:        0.00000 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:        0.00000 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0.0000000
+Ave special neighs/atom = 6.0000000
+Neighbor list builds = 1
+Dangerous builds = 0
+WARNING: Using 'neigh_modify every 1 delay 0 check yes' setting during minimization (../min.cpp:187)
+Per MPI rank memory allocation (min/avg/max) = 4.840 | 4.840 | 4.840 Mbytes
+Step Temp E_pair E_mol TotEng Press 
+    2000            0            0 1.0106045e-14 1.0106045e-14 4.5144535e-09 
+    2100 9.8327366e-10            0 2.0246112e-15 8.4280802e-10 -1.7229315e-09 
+    2200 8.4888447e-10            0 2.3917937e-15 7.2761765e-10 -1.3756079e-09 
+    2300 4.3386497e-10            0 1.5641001e-15 3.7188583e-10 -9.8647768e-10 
+    2400 6.0915472e-11            0 7.9513164e-16 5.2214057e-11 -6.1369025e-10 
+    2500 2.4115652e-11            0 3.5086808e-16 2.067091e-11 -3.5581177e-10 
+    2600 2.8762696e-11            0 1.4496592e-16 2.4653885e-11 -2.4188023e-10 
+    2700 3.0851093e-12            0 5.411366e-17 2.6444335e-12 -1.2233237e-10 
+    2800 8.7369788e-13            0 2.0070582e-17 7.4890397e-13 -7.6586897e-11 
+    2900 5.5734373e-13            0 7.2099151e-18 4.7773041e-13 -4.0768466e-11 
+    3000 1.1448718e-13            0 2.5125986e-18 9.8134378e-14 -2.214517e-11 
+    3100 3.0549921e-14            0 7.7079101e-19 2.6186418e-14 -9.9666379e-12 
+    3200 1.1276089e-15            0 1.8771107e-19 9.6670966e-16 -2.3145516e-12 
+    3300 2.3441679e-15            0 3.4194337e-20 2.009321e-15 2.3389401e-12 
+    3400 8.0196619e-15            0 1.6965994e-20 6.8740129e-15 4.8866702e-12 
+    3500 1.0710711e-14            0 3.0517548e-20 9.1806397e-15 6.1002274e-12 
+    3600 1.1597436e-14            0 4.3059119e-20 9.9407027e-15 6.4821033e-12 
+    3700 1.075729e-14            0 4.8186407e-20 9.2205828e-15 6.3817851e-12 
+    3800 9.0321865e-15            0 4.7021114e-20 7.7419212e-15 6.0112087e-12 
+    3900 7.096397e-15            0 4.2112195e-20 6.0826681e-15 5.5070299e-12 
+    4000 5.4432601e-15            0 3.5574538e-20 4.6656871e-15 4.9451247e-12 
+Loop time of 5.74415 on 1 procs for 2000 steps with 7 atoms
+
+6.2% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max iterations
+  Energy initial, next-to-last, final = 
+    1.01060450671254e-14 3.56047517631587e-20 3.55745381097612e-20
+  Force two-norm initial, final = 1.5393985e-05 1.3151310e-07
+  Force max component initial, final = 9.3038977e-06 7.6970656e-08
+  Final line search alpha, max atom move = 0.0000000 0.0000000
+  Iterations, force evaluations = 2000 2000
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Bond    | 0.002293   | 0.002293   | 0.002293   |   0.0 |  0.04
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.001388   | 0.001388   | 0.001388   |   0.0 |  0.02
+Output  | 0.050117   | 0.050117   | 0.050117   |   0.0 |  0.87
+Modify  | 1.8011     | 1.8011     | 1.8011     |   0.0 | 31.35
+Other   |            | 3.889      |            |       | 67.71
+
+Nlocal:        7.00000 ave           7 max           7 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:        0.00000 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:        0.00000 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0.0000000
+Ave special neighs/atom = 6.0000000
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:18

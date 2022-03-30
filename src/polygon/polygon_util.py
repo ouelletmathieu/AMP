@@ -1,9 +1,10 @@
+import itertools
 from multiprocessing.dummy import Array
 from typing import Tuple
 from matplotlib import pyplot
 from pandas import DataFrame, array
 from shapely.geometry import Polygon
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import random
 import shapely
 import math
@@ -31,10 +32,7 @@ def euclid_squared_minimum(points: list[list], min_d_squared: float) -> bool:
         for j in range(len(points)-1):
 
             if i<j:
-                tot = 0
-                for p in range(len(points[i])):
-                    tot += (points[i][p]-points[j][p])**2
-
+                tot = sum((points[i][p]-points[j][p])**2 for p in range(len(points[i])))
                 if tot < min_d_squared:
                     min_okay = False
                     break
@@ -59,18 +57,17 @@ def find_random_poly(n: int, min_d_squared = 0.0) -> Polygon:
 
     while not found: 
         polygon1 = []
-        for i in range(n):
+        for _ in range(n):
             pt = (random.random(),random.random())
             polygon1.append(pt)
         poly = Polygon(polygon1)
 
         if poly.is_simple:
-            if min_d_squared!=0:
-                if euclid_squared_minimum(list(poly.exterior.coords),min_d_squared):
-                    found = True
-            else:
+            if min_d_squared == 0:
                 found = True
 
+            elif euclid_squared_minimum(list(poly.exterior.coords),min_d_squared):
+                found = True
     return poly
 
 def move_poly(poly1: Polygon, rx: float, ry: float, radian: float) -> Polygon:
@@ -88,8 +85,9 @@ def move_poly(poly1: Polygon, rx: float, ry: float, radian: float) -> Polygon:
 
     #those two should commute 
     geom1 = shapely.affinity.translate(poly1, xoff=rx, yoff= ry,zoff =0 )
-    geom2 = shapely.affinity.rotate(geom1, radian, origin='centroid', use_radians=True)
-    return geom2
+    return shapely.affinity.rotate(
+        geom1, radian, origin='centroid', use_radians=True
+    )
 
 def get_poly_angle(poly1: Polygon) -> float:
     """get the angle defined by the line between the centroid and the first point
@@ -133,10 +131,7 @@ def get_scaled_points(poly: Polygon, sx: float, sy: float) -> list[tuple]:
     Returns:
         list[list]: list of scaled point  [(x1,y1),(x2,y2),...,(xn,yn)]
     """
-    scaled = []
-    for pt in list(poly.exterior.coords):
-        scaled.append( (sx*pt[0], sy*pt[1]) )
-    return scaled
+    return [(sx*pt[0], sy*pt[1]) for pt in list(poly.exterior.coords)]
 
 def get_fitness(poly1: Polygon, poly2: Polygon, min_r_squared = 0.001, time_min_binded = 1, output_index = False, compute_intersection = True)-> tuple[float,list,float]:
     """return the fitness 1/r^2 and min_r_squared is the cap for small r
@@ -239,8 +234,7 @@ def farthest_from_centroid(poly1: Polygon) -> float:
 #      Potential based binding  (behave poorly)        #
 ########################################################
 
-def find_a_good_start(poly1: Polygon, poly2: Polygon,  min_r_squared = 0.001, \
-    r_list = [0.7,0.85,1,1.15,1.3,1.5], n_center = 40, n_second = 40 ) -> tuple[Polygon, list[float], list[Polygon], list[list[tuple]]] :
+def find_a_good_start(poly1: Polygon, poly2: Polygon, min_r_squared = 0.001, r_list = None, n_center = 40, n_second = 40) -> tuple[Polygon, list[float], list[Polygon], list[list[tuple]]]:
     """try to place polygon 2 at n_center angle arround polygon 1 at all distance in r_list with the polygon rotated 
     Args:
         poly1 (Polygon): Polygon1
@@ -252,6 +246,8 @@ def find_a_good_start(poly1: Polygon, poly2: Polygon,  min_r_squared = 0.001, \
         Tuple[Polygon, list[float], list[Polygon], list[list[tuple]]]: 
             first polygon, list of fitness for all starting pos, polygon for all starting pos, list of pos
     """
+    if r_list is None:
+        r_list = [0.7,0.85,1,1.15,1.3,1.5]
     poly1 = center_poly(poly1)
     main_angle_center = [i*2*math.pi/n_center for i in range(n_center)]
     angle_second = [i*2*math.pi/n_second for i in range(n_second)]
@@ -337,28 +333,28 @@ def estimate_stacking(poly1: Polygon, poly2: Polygon, n_keep = 12, rate = 0.001,
         Tuple[float, float, Polygon, Polygon]: best initial position fitness, best final position fitness,  
             best initial position polygon, best final position polygon (all for polygon 2)
     """
-    poly1, fit_list, poly_list, pos_list = find_a_good_start(poly1, poly2,  min_r_squared)  
+    poly1, fit_list, poly_list, _ = find_a_good_start(poly1, poly2,  min_r_squared)
     ind_and_fit = [(i,fit_list[i]) for i in range(len(fit_list))]
-    ind_and_fit.sort(key = lambda x: x[1]) 
+    ind_and_fit.sort(key = lambda x: x[1])
     inds = ind_and_fit[-n_keep:]
 
-    best_before = inds[-1][1] 
+    best_before = inds[-1][1]
     best_found, best_poly = 0, 0
 
     for ind, fit_b in inds:
         best_for_ind, best_poly_for_ind = 0,0
         poly2 = poly_list[ind]
-        for i in range(40):
+        for _ in range(40):
             fit = get_fitness(poly1, poly2, min_r_squared)
             if fit >best_for_ind: 
                 best_for_ind = fit
                 best_poly_for_ind = poly2
             poly1, poly2 = move_in_gradient(poly1, poly2, rate, h_xy, h_theta, min_r_squared)
-            
+
         if best_for_ind > best_found:
             best_found = best_for_ind
             best_poly = best_poly_for_ind
-    
+
     return best_before, best_found, poly1, best_poly
 
 ########################################################
@@ -389,6 +385,7 @@ def find_good_initial_guess(set_pt1: np.ndarray, set_pt2: np.ndarray, data_to_sh
     cg_1 = np.sum(set_pt1,0)/len(set_pt1)
     cg_2 = np.sum(set_pt2,0)/len(set_pt2)
     trans = set_pt2 - cg_2 
+    transc = np.copy(trans)
 
     m1, b1 = np.polyfit([l[0] for l in set_pt1],  [l[1] for l in set_pt1], 1)
     m2, b2 = np.polyfit([l[0] for l in set_pt2],  [l[1] for l in set_pt2], 1)
@@ -398,17 +395,17 @@ def find_good_initial_guess(set_pt1: np.ndarray, set_pt2: np.ndarray, data_to_sh
     trans1 = trans1 +  cg_1
     #dist1, _ = icp.nearest_neighbor(set_pt1, trans1)
 
-    T2 = icp.rotation_matrix_2d( math.atan2(m1,1) - math.atan2(m2,1) + math.pi )
+    T2 = icp.rotation_matrix_2d( math.atan2(m1,1) - math.atan2(m2,1) + math.pi ) 
     T2[:,0] = T2[:,0]
-    trans2 = np.dot(T2, trans.T).T
+    trans2 = np.dot(T2, transc.T).T
     trans2 = trans2 +  cg_1
     #dist2, _ = icp.nearest_neighbor(set_pt1, trans2)
 
     if not isinstance(data_to_shift, type(None)):
-        data = np.copy(data_to_shift)
-        data1 =  np.dot(T, data.T).T
-        data = np.copy(data_to_shift)
-        data2 =  np.dot(T2, data.T).T
+        data = np.copy(data_to_shift) - cg_2 
+        data1 =  np.dot(T, data.T).T +  cg_1
+        data = np.copy(data_to_shift) - cg_2 
+        data2 =  np.dot(T2, data.T).T +  cg_1
         return trans1, data1, trans2, data2
         
     else:
@@ -461,7 +458,7 @@ def check_self_matching(n_point: int, poly1: Polygon,  avg_dist_tol=0.1, ratio_m
     """
     area_poly1 = poly1.area
     max_inter = ratio_max_overlap_area*area_poly1
-    real_point = list(poly1.exterior.coords)[0:-1]
+    real_point = list(poly1.exterior.coords)[:-1]
 
     list_of_index = []
     list_of_subset = []
@@ -492,10 +489,10 @@ def check_self_matching(n_point: int, poly1: Polygon,  avg_dist_tol=0.1, ratio_m
 
             B1 = transform_homogeneous_2d(B1, T1)
             B2 = transform_homogeneous_2d(B2, T2)
-            
+
             #if found mathching is good enough
             if np.average(dist1) < avg_dist_tol :
-                
+
                 poly2_pts_1 = transform_homogeneous_2d(all_pts_new1, T1)
                 poly2_pts_1 = translate_np_array(poly2_pts_1, first_index, B1, 0)
                 poly2_1 = Polygon(tuple(map(tuple, poly2_pts_1)) )
@@ -516,11 +513,11 @@ def check_self_matching(n_point: int, poly1: Polygon,  avg_dist_tol=0.1, ratio_m
                 poly2_pts_2 = translate_np_array(poly2_pts_2, first_index, B2, 0)
                 poly2_2 = Polygon(tuple(map(tuple, poly2_pts_2)) )
                 inter_2 = poly1.intersection(poly2_2).area
-                
+
                 #check if they overlap      
                 if  inter_2<max_inter:
                     list_found_poly.append(poly2_2)
-        
+
                 """
                 plt.plot([l[0] for l in A], [l[1] for l in A])
                 plt.plot([l[0] for l in B2], [l[1] for l in B2])
@@ -549,13 +546,17 @@ def check_matching(n_point: int, poly1: Polygon, poly2: Polygon, no_icp_threshol
     area_poly = (poly1.area + poly2.area)/2
     max_inter = ratio_max_overlap_area*area_poly
     #get stationarry point of poly1 as numpy
-    real_point_1, real_point_2 = list(poly1.exterior.coords)[0:-1], list(poly2.exterior.coords)[0:-1]
+    real_point_1, real_point_2 = (
+        list(poly1.exterior.coords)[:-1],
+        list(poly2.exterior.coords)[:-1],
+    )
+
 
     #only works if it is the same size
     if len(real_point_1)!=len(real_point_2):
         print("polygon are not of the same size")
         return []
-    
+
     list_of_index = []                              #index of point for each subset for both poly to test the mating 
     list_of_subset_1,list_of_subset_2 = [], []      #index of point for each subset for both poly
     list_found_poly = []                            #list of solution
@@ -573,56 +574,55 @@ def check_matching(n_point: int, poly1: Polygon, poly2: Polygon, no_icp_threshol
         list_of_subset_2.append(lst_sel_pt_2)
         list_of_index.append(lst_sel_ind)
 
-    for i in range(len(list_of_subset_1)):                  # point for the healthy (not moving)
-        for j in range(len(list_of_subset_2)):              # point for the prion (attach to it)
-                         
-            all_pts_2_np =  np.array(real_point_2)
-            first_index_2  = list_of_index[j][0]            #index of the fist point for each subset of prion
-            index_set_1, index_set_2 = list_of_index[i], list_of_index[j]
-            A, B  = np.array(list_of_subset_1[i]), np.array(list_of_subset_2[j])
+    for i, j in itertools.product(range(len(list_of_subset_1)), range(len(list_of_subset_2))):
+        all_pts_2_np =  np.array(real_point_2)
+        first_index_2  = list_of_index[j][0]            #index of the fist point for each subset of prion
+        index_set_1, index_set_2 = list_of_index[i], list_of_index[j]
+        A, B  = np.array(list_of_subset_1[i]), np.array(list_of_subset_2[j])
 
-            
-            B1, all_pts_2_np_new1, B2, all_pts_2_np_new2 = find_good_initial_guess(A, B, data_to_shift = all_pts_2_np)
-            
-            if n_point!=2:
 
-                dist0 = icp.nearest_neighbor(B1, A)[0]
-                
-                if np.mean(dist0)>no_icp_threshold:
-                    T1, dist1, nb_step1 = icp.icp(B1, A)
-                    T2, dist2, nb_step2 = icp.icp(B2, A)
-                    B1, B2 = transform_homogeneous_2d(B1, T1), transform_homogeneous_2d(B2, T2)  
-                else:
-                    dist1,dist2 = dist0, dist0
-                    T1,T2 = np.identity(3),np.identity(3)
+        B1, all_pts_2_np_new1, B2, all_pts_2_np_new2 = find_good_initial_guess(A, B, data_to_shift = all_pts_2_np)
+
+        if n_point!=2:
+
+            dist0 = icp.nearest_neighbor(B1, A)[0]
+
+            if np.mean(dist0)>no_icp_threshold:
+                T1, dist1, nb_step1 = icp.icp(B1, A)
+                T2, dist2, nb_step2 = icp.icp(B2, A)
+                B1, B2 = transform_homogeneous_2d(B1, T1), transform_homogeneous_2d(B2, T2)  
             else:
-                dist1,dist2 = 0, 0
+                dist1,dist2 = dist0, dist0
                 T1,T2 = np.identity(3),np.identity(3)
+        else:
+            dist1,dist2 = 0, 0
+            T1,T2 = np.identity(3),np.identity(3)
 
-            
-            
-            #if found mathching is good enough for transformation 1 
-            if np.average(dist1) < avg_dist_tol : 
-                poly2_pts_1 = transform_homogeneous_2d(all_pts_2_np_new1, T1)
-                poly2_pts_1 = translate_np_array(poly2_pts_1, first_index_2, B1, 0)
-                poly2_1 = Polygon(tuple(map(tuple, poly2_pts_1)) )
-                inter_1 = poly1.intersection(poly2_1).area
-                #check if they overlap
-                if  inter_1<max_inter and not poly1.within(poly2_1) and not poly2_1.within(poly1):
-                    list_found_poly.append(poly2_1)
-            #if found mathching is good enough for transformation 2 
-            if np.average(dist2) < avg_dist_tol :
-                poly2_pts_2 = transform_homogeneous_2d(all_pts_2_np_new2, T2)
-                poly2_pts_2 = translate_np_array(poly2_pts_2, first_index_2, B2, 0)
-                poly2_2 = Polygon(tuple(map(tuple, poly2_pts_2)) )
-                inter_2 = poly1.intersection(poly2_2).area
-                #check if they overlap      
-                if  inter_2<max_inter and not poly1.within(poly2_2) and not poly2_2.within(poly1) :
-                    list_found_poly.append(poly2_2)
+
+
+        #if found mathching is good enough for transformation 1 
+        if np.average(dist1) < avg_dist_tol : 
+            poly2_pts_1 = transform_homogeneous_2d(all_pts_2_np_new1, T1)
+            poly2_pts_1 = translate_np_array(poly2_pts_1, first_index_2, B1, 0)
+            poly2_1 = Polygon(tuple(map(tuple, poly2_pts_1)) )
+            inter_1 = poly1.intersection(poly2_1).area
+            #check if they overlap
+            if  inter_1<max_inter and not poly1.within(poly2_1) and not poly2_1.within(poly1):
+                list_found_poly.append(poly2_1)
+        #if found mathching is good enough for transformation 2 
+        if np.average(dist2) < avg_dist_tol :
+            poly2_pts_2 = transform_homogeneous_2d(all_pts_2_np_new2, T2)
+            poly2_pts_2 = translate_np_array(poly2_pts_2, first_index_2, B2, 0)
+            poly2_2 = Polygon(tuple(map(tuple, poly2_pts_2)) )
+            inter_2 = poly1.intersection(poly2_2).area
+            #check if they overlap      
+            if  inter_2<max_inter and not poly1.within(poly2_2) and not poly2_2.within(poly1) :
+                list_found_poly.append(poly2_2)
 
     return list_found_poly
 
 def is_one_to_one_binding(binding_pairs: tuple[list[Integer],list[Integer]]) -> bool:
+    # sourcery skip: simplify-len-comparison
     """check if the binding between two polygon is one to one
 
     Args:
@@ -645,7 +645,7 @@ def is_one_to_one_binding(binding_pairs: tuple[list[Integer],list[Integer]]) -> 
     return True
 
 def estimate_stacking_icp(poly1: Polygon, poly2: Polygon, n_point_max = 4, avg_dist_tol=0.1, ratio_max_overlap_area = 0.05, \
-     output_index = False, multiple_bind = True ) ->  tuple[list[float], list[Polygon], list[list], list[float]]:
+     output_index = False, multiple_bind = True ) -> tuple[list[float], list[Polygon], list[list], list[float]]:
     """ gives a list of potential staking of the two polygon poly1 and poly2 considering a maximum of n_point_max matching (included)
     use the method check_matching for each n and check for multiple binding if asked and order the solution.  
 
@@ -670,23 +670,28 @@ def estimate_stacking_icp(poly1: Polygon, poly2: Polygon, n_point_max = 4, avg_d
     uncheck_sol = []
     for n_point in range(2, n_point_max+1):
         uncheck_sol.extend(check_matching(n_point, poly1, poly2,  avg_dist_tol, ratio_max_overlap_area))
-    
+
 
     for sol in uncheck_sol:
         fit, index_pair_fit, intersect = get_fitness(poly1, sol, output_index = True)
         #if not multiple bind need to check if there is more than one atom binded on the same site. 
         okay = True
-        if not multiple_bind:
-            if not is_one_to_one_binding(index_pair_fit):
-                okay = False
+        if not multiple_bind and not is_one_to_one_binding(index_pair_fit):
+            okay = False
         if okay:
             sol_ordered.append(sol)
             fit_ordered.append(fit)
             index_ordered.append(index_pair_fit)
             intersect_list.append(intersect)
-    
-    ordered_all = [val for val in sorted(zip(fit_ordered, sol_ordered, index_ordered, intersect_list), key=lambda pair: pair[0])]
-    
+
+    ordered_all = list(
+        sorted(
+            zip(fit_ordered, sol_ordered, index_ordered, intersect_list),
+            key=lambda pair: pair[0],
+        )
+    )
+
+
     fit_ordered, sol_ordered, index_ordered, intersect_ordered  = [x[0] for x in ordered_all],  [x[1] for x in ordered_all], [x[2] for x in ordered_all], [x[3] for x in ordered_all]
 
     if output_index:
@@ -698,7 +703,7 @@ def estimate_stacking_icp(poly1: Polygon, poly2: Polygon, n_point_max = 4, avg_d
 #        molecular distance geometry problem           #
 ########################################################
 
-def update(list_length: list[float], sol: Sol_type, theta: float) ->  Sol_type:
+def update(list_length: list[float], sol: Sol_type, theta: float) -> Sol_type:
     """utility to find random polygons with same edges length. It increase the solution vector adding a new edge with
     the good edge length and with and angle theta with the previous edge
     (Sol_type = Tuple[list[float], list[Tuple[float,float]]])
@@ -714,12 +719,11 @@ def update(list_length: list[float], sol: Sol_type, theta: float) ->  Sol_type:
     Returns:
        Sol_type : return and updated solution (like input sol)
     """
-    id = len(sol[0])
-    if id == len(list_length):
+    worker_id = len(sol[0])
+    if worker_id == len(list_length):
         return True, sol
-    else:
-        new_pos = (sol[1][0] + list_length[id]*math.cos(theta), sol[1][1] + list_length[id]*math.sin(theta))
-        return False, (sol[0] + (theta,), new_pos)
+    new_pos = (sol[1][0] + list_length[worker_id]*math.cos(theta), sol[1][1] + list_length[worker_id]*math.sin(theta))
+    return False, (sol[0] + (theta,), new_pos)
 
 def get_pos(list_length: list[float], sol: Sol_type) -> list[tuple[float]]:
     """get the position list of each point to use in shapely (warning read full description) or do computation. Last position should be close to [0,0] but
@@ -759,7 +763,7 @@ def random_sol(list_length: list[float], min_angle: float) -> Sol_type:
     """
 
     sol = (tuple(),(0,0))
-    for i in range(len(list_length)):
+    for _ in range(len(list_length)):
         found = False
         if len(sol[0]) > 0:
             last_angle = sol[0][-1]
@@ -774,7 +778,7 @@ def random_sol(list_length: list[float], min_angle: float) -> Sol_type:
         _, sol = update(list_length, sol, new_theta)
     return sol, sol[1][0]**2 + sol[1][1]**2
 
-def find_set_of_conformer_polygon(list_length:list[float], max_error_squared=0.001, max_try = 100000, is_simple = True, min_angle= 0.174533)-> list[Sol_type]:
+def find_set_of_conformer_polygon(list_length:list[float], max_error_squared=0.001, max_try = 100000, is_simple = True, min_angle= 0.174533) -> list[Sol_type]:
     """create a list of conformer polygon with all the same list_length e.x. [1,1,1,1,1] for pentagon with same edge lenght 
         and a maximal squared distance from the origin of the last vertex given by max_error_squared (perfect solution should be 0).
         The last edge is always a little bit shorter or longer.
@@ -793,33 +797,28 @@ def find_set_of_conformer_polygon(list_length:list[float], max_error_squared=0.0
             list_length: length of edges of the polygon. They are in order of appearance from (0,0)
     """    
     list_sol = []
-    for i in range(max_try):
-            sol, fit = random_sol(list_length,min_angle)
-            delta = abs(((math.pi -sol[0][-1])+sol[0][0])%(2*math.pi))
-            if fit < max_error_squared and delta > min_angle and delta < 2*math.pi-min_angle:
-                position = get_pos(list_length, sol)[:-1] 
-                position.append((0,0))
+    for _ in range(max_try):
+        sol, fit = random_sol(list_length,min_angle)
+        delta = abs(((math.pi -sol[0][-1])+sol[0][0])%(2*math.pi))
+        if fit < max_error_squared and delta > min_angle and delta < 2*math.pi-min_angle:
+            position = get_pos(list_length, sol)[:-1] 
+            position.append((0,0))
 
-                if is_simple:
-                    poly = Polygon(position)
-                    if poly.is_simple:
-                        list_sol.append(position)
-                else:
+            if is_simple:
+                poly = Polygon(position)
+                if poly.is_simple:
                     list_sol.append(position)
-    
+            else:
+                list_sol.append(position)
+
     return list_sol
-
-########################################################
-#                    Analysis                          #
-########################################################
-
 
 
 ########################################################
 #                        IO                            #
 ########################################################
 
-def sol_string_to_poly(sol_str: str, n: int)-> Polygon:
+def sol_string_to_poly(sol_str: str, n: int) -> Polygon:
     """convert a solution string to a polygon
 
     Args:
@@ -831,13 +830,11 @@ def sol_string_to_poly(sol_str: str, n: int)-> Polygon:
     """
 
     list_part  = re.split('\(|\)',sol_str)
-    angles = tuple([float(a) for a in list_part[1].split(',')])
-    last_pos = tuple([float(a) for a in list_part[3].split(',')])
+    angles = tuple(float(a) for a in list_part[1].split(','))
+    last_pos = tuple(float(a) for a in list_part[3].split(','))
 
     pts = get_pos([1]*n, (angles,last_pos))
-    poly1 = Polygon(pts)
-
-    return poly1
+    return Polygon(pts)
 
 def rescale_fit(fit: float, min_r_squared = 0.001)-> float:
     """return the rescaled fitness where 3 mean that 3 point are at the min_r_squared distance
@@ -851,7 +848,7 @@ def rescale_fit(fit: float, min_r_squared = 0.001)-> float:
     """
     return (min_r_squared**2)*math.exp(fit)
 
-def read_txt_file_fit_pos(df: DataFrame)-> tuple[list[float], list[list[tuple[float]]]]:
+def read_txt_file_fit_pos(df: DataFrame) -> tuple[list[float], list[list[tuple[float]]]]:
     """given a dataframe with one column formatted like:
         fitness, sol 
 
@@ -863,18 +860,21 @@ def read_txt_file_fit_pos(df: DataFrame)-> tuple[list[float], list[list[tuple[fl
             fit_list: list of fitness for each solution
             pos_list: list of position 
     """
-    if 'fit' in df:
-        column = df['fit']
-    else:
-        column = df.iloc[:, 0]
-
+    column = df['fit'] if 'fit' in df else df.iloc[:, 0]
     pos_list = []
     fit_list = []
     for nb in range(len(column)):
         list_part  = re.split('\[|\]',column[nb])
         fit = float(list_part[0])
         list_pos_xy = re.split('\(|\)',list_part[1])
-        position =   [ tuple([float(val.replace('\'', '')) for val in list_pos_xy[2*i+1].split(',')]) for i in range(int(len(list_pos_xy)/2))]
+        position = [
+            tuple(
+                float(val.replace('\'', ''))
+                for val in list_pos_xy[2 * i + 1].split(',')
+            )
+            for i in range(len(list_pos_xy) // 2)
+        ]
+
         pos_list.append(position)
         fit_list.append(rescale_fit(fit))
 
@@ -911,7 +911,7 @@ def find_missing_translation(length_list, partial_translation):
     #generate two possible polygon full translation 
     clockwise, anti_clockwise = {},{}
 
-    for i in range(0,len(length_list)):
+    for i in range(len(length_list)):
         clockwise[(index+i)%len(length_list)] = (val+i)%len(length_list)
         anti_clockwise[(index+i)%len(length_list)] = (val-i)%len(length_list)
     clockwise_okay, anti_clockwise_okay = True, True
@@ -922,7 +922,7 @@ def find_missing_translation(length_list, partial_translation):
             anti_clockwise_okay=False
         if not clockwise_okay and not anti_clockwise_okay:
             break
-    
+
     if clockwise_okay and check_if_length_match(length_list, clockwise):
         return clockwise
     elif anti_clockwise_okay and check_if_length_match(length_list, anti_clockwise):
@@ -942,7 +942,15 @@ def check_if_length_match(length_list, complete_translation):
 
 
 def to_tuple(list_pos):
-    return tuple([(x,y) for x,y in list_pos])
+    return tuple(list(list_pos))
+
+########################################################
+#                        Utils                         #
+########################################################
+
+
+
+
 
 ########################################################
 #                        PLOTS                         #
@@ -954,14 +962,14 @@ def test_plot_fit(poly1, poly2):
     poly2n = center_poly(poly2)
     fit_list = []
     poly2n = move_poly(poly2n, 2, 0, 0.4)
-    for i in range(200):
+    for _ in range(200):
         poly2n = move_poly(poly2n, -0.01, 0, 0.4)
         fit_list.append(get_fitness(poly2n, poly1n))
 
     return fit_list
     
 
-
+    
 
 
 

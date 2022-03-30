@@ -25,13 +25,9 @@ from matplotlib import offsetbox
 # plot correlation between angles 
 def plot_correlation_angles(fitness_list, postition_list, shifted_angle = False):
 
-    a_list = []
-
     n_edge = len(postition_list[0])-1
 
-    for i in range(n_edge):
-        a_list.append(list())
-
+    a_list = [list() for _ in range(n_edge)]
     for pos in postition_list:
         if  shifted_angle:
             angles = get_smaller_angle_description(pos)
@@ -45,7 +41,7 @@ def plot_correlation_angles(fitness_list, postition_list, shifted_angle = False)
     for i in range(len(a_list)):
         for j in range(i,len(a_list)):
             axs[i,j].scatter(a_list[i],a_list[j], c = fitness_list, s=10)
-        
+
     plt.show()
 
     return fig, axs
@@ -59,8 +55,7 @@ def learn_manifold(postition_list, dim =3, n_neighbors=10):
     for p_vec in postition_list:
         new_p_vec = []
         for pos in p_vec:
-            new_p_vec.append(pos[0])
-            new_p_vec.append(pos[1])
+            new_p_vec.extend((pos[0], pos[1]))
         flatten_pos.append(new_p_vec)
     flatten_pos = np.array(flatten_pos)
 
@@ -68,7 +63,7 @@ def learn_manifold(postition_list, dim =3, n_neighbors=10):
     # create the iso_map for the norestriction 
     iso_manifold  = manifold.Isomap( n_components=dim, n_neighbors=n_neighbors)
     full_manifold = iso_manifold.fit_transform(flatten_pos)
-    col = ['Component '+ str(i+1) for i in range(dim)]
+    col = [f'Component {str(i+1)}' for i in range(dim)]
     full_manifold_pd = pd.DataFrame(full_manifold, columns=col)
 
     return iso_manifold, full_manifold_pd
@@ -80,7 +75,7 @@ def learn_manifold(postition_list, dim =3, n_neighbors=10):
 def plot_manifold_3d(manifold_df, fig= None, active_axis=None, fitness_list = None, angle_1 = 30, angle_2 = 310, dim= 3, plot_axis = False, alpha = 0.3):
     
     if active_axis is None:
-        fig = plt.figure(figsize=(8, 8))
+        fig = plt.figure(figsize=(24, 24), dpi=440)
         ax = fig.add_subplot(111,  projection=Axes3D.name)
     else:
         ax = active_axis
@@ -94,7 +89,7 @@ def plot_manifold_3d(manifold_df, fig= None, active_axis=None, fitness_list = No
         fig.axes[0].get_yaxis().set_visible(False)
 
     if dim == 3:
-        if not fitness_list is None:
+        if fitness_list is not None:
             ax.scatter(xs, ys, zs, c=fitness_list, marker="o", alpha=alpha)
         else:
             ax.scatter(xs, ys, zs, marker="o", c="sandybrown",alpha=alpha)
@@ -109,16 +104,15 @@ def get_position_on_manifold(postition_list, manifold,  dim=3):
     for p_vec in postition_list:
         new_p_vec = []
         for pos in p_vec:
-            new_p_vec.append(pos[0])
-            new_p_vec.append(pos[1])
+            new_p_vec.extend((pos[0], pos[1]))
         flatten_fitted.append(new_p_vec)
 
 
     flatten_fitted = np.array(flatten_fitted)
     fitted_manifold = manifold.transform(flatten_fitted)
-    col = ['Component '+ str(i+1) for i in range(dim)]
+    col = [f'Component {str(i+1)}' for i in range(dim)]
     fitted_manifold_pd = pd.DataFrame(fitted_manifold, columns=col)
-    toreturn = [0]*dim 
+    toreturn = [0]*dim
     for i, col_name in enumerate(col):
         toreturn[i] = fitted_manifold_pd[col_name]
 
@@ -128,7 +122,7 @@ def get_position_on_manifold(postition_list, manifold,  dim=3):
 def plot_on_manifold_3d(postition_list, manifold, fig= None, active_axis= None, fitness_list= None, angle_1= 30, angle_2= 310, dim= 3, plot_axis= False, alpha= 0.3):
     
     if active_axis is None:
-        fig = plt.figure()
+        fig =  plt.figure(figsize=(24, 24), dpi=440)
         ax = fig.add_subplot(111, projection=Axes3D.name)
     else:
         ax = active_axis
@@ -136,9 +130,9 @@ def plot_on_manifold_3d(postition_list, manifold, fig= None, active_axis= None, 
     ax.view_init(angle_1, angle_2)
 
     xyz = get_position_on_manifold(postition_list, manifold, dim)
-    
+
     if dim == 3:
-        if not fitness_list is None:
+        if fitness_list is not None:
             ax.scatter(xyz[0], xyz[1], xyz[2], c=fitness_list, marker="o", alpha=alpha)
         else:
             ax.scatter(xyz[0], xyz[1], xyz[2], marker="o", c="sandybrown",alpha=alpha)
@@ -171,7 +165,7 @@ def plot_polygon_on_manifold_3d(postition_list, manifold, fig, active_axis, d_mi
                 valid = False
                 break
         if valid:
-            image(ax2,get_image_poly(xp,yp),[x,y])
+            image(ax2,get_image_poly(xp,yp, 0.015),[x,y])
             pos_used.append((x,y))
     
     return fig, active_axis
@@ -255,7 +249,7 @@ def proj(X, ax1, ax2):
 
 def image(ax,arr,xy):
     """ Place an image (arr) as annotation at position xy """
-    im = offsetbox.OffsetImage(arr, zoom=2)
+    im = offsetbox.OffsetImage(arr, zoom=0.1)
     im.image.axes = ax
     ab = offsetbox.AnnotationBbox(im, xy, xybox=(-30., 30.),
                         xycoords='data', boxcoords="offset points",
@@ -263,16 +257,20 @@ def image(ax,arr,xy):
     ax.add_artist(ab)
 
 
-def get_image_poly(xp,yp):
+def get_image_poly(xp,yp,ddd ):
     img_buf = io.BytesIO()
-    fig2 = plt.figure()
-    fig2.set_size_inches(0.2, 0.2)
+    dpi = 300
+    fig2 = plt.figure( figsize=(1, 1), dpi=dpi )
+    
+    #fig2.set_size_inches(0.2, 0.2)
+    
     ax = fig2.add_subplot(111)
+    ax.set_aspect('equal')
     ax.axis('off')
     fig2.axes[0].get_xaxis().set_visible(False)
     fig2.axes[0].get_yaxis().set_visible(False)
-    ax.plot(xp,yp)
-    fig2.savefig(img_buf, transparent=True, bbox_inches=0)
+    ax.plot(xp,yp, linewidth=3)
+    fig2.savefig(img_buf, transparent=True, bbox_inches=0,  dpi=dpi)
     im = Image.open(img_buf)
     plt.close(fig2)
     return im
@@ -280,18 +278,17 @@ def get_image_poly(xp,yp):
 def measure_distance(pos1, list_pos2):
     with open('tmp.dat', 'w') as f:
 
-        for pos in pos1[0:-1]:
+        for pos in pos1[:-1]:
             
-            f.write(str(pos[0])+ " " + str(pos[1])+ " \n" )
+            f.write(f'{str(pos[0])} {str(pos[1])}' + " \n")
         f.write( " \n" )
 
         for pos_list in list_pos2:
-            for pos in pos_list[0:-1]:
+            for pos in pos_list[:-1]:
                 
-                f.write(str(pos[0])+ " " + str(pos[1])+ " \n" )
+                f.write(f'{str(pos[0])} {str(pos[1])}' + " \n")
             f.write( " \n" )
     p = subprocess.Popen(['./sim_bin < tmp.dat > out.dat'],  shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = p.communicate()
     with open('out.dat') as f:
-        lines = f.readlines()
-        return lines
+        return f.readlines()

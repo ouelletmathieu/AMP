@@ -1,0 +1,13 @@
+"filename", "language", "Python", "JSON", "comment", "blank", "total"
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/NEB_main.py", "Python", 61, 0, 12, 26, 99
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/database.py", "Python", 72, 0, 16, 11, 99
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/internal_node_main.py", "Python", 21, 0, 1, 8, 30
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/Nudged_Elastic_Band.py", "Python", 19, 0, 0, 7, 26
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/logger.py", "Python", 10, 0, 0, 7, 17
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/my_lammps.py", "Python", 2, 0, 0, 0, 2
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/lammps_util/protein_template.py", "Python", 32, 0, 2, 14, 48
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/poly_main.ipynb", "JSON", 0, 379, 0, 0, 379
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/polygon_matching_main copy.py", "Python", 45, 0, 14, 21, 80
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/polygon_util.py", "Python", 1, 0, 0, 3, 4
+"/Users/mathieuouellet/Dropbox/My Mac (mathieu’s MacBook Pro)/Desktop/AMP/AMP/src/polygon/stability_main.py", "Python", 181, 0, 40, 41, 262
+"Total", "-", 444, 379, 85, 138, 1046

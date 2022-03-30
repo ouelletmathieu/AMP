@@ -13,6 +13,7 @@ class Protein_Template:
         self.healthy_position = None 
         self.prion_position = None
         self.connection = None
+        self.bond_length = []
     
     def set_healthy_structure(self, position, connection = None):
         """set the structure to be considered healthy 
@@ -50,7 +51,10 @@ class Protein_Template:
         self.mass = mass
         self.K = K
         self.lj_param = lj_param
-        
+    
+    def set_bond_length(self, bond_length):
+        self.bond_length = bond_length
+
     def read_from_file(self, path):
         print("todo not coded")
         
@@ -152,6 +156,9 @@ class Protein_Template:
             f.write(sep +str(i+1) + sep + str(i+1) + sep + str(atom1+1) + sep + str(atom2+1)  + "\n") 
         f.write("\n")
         
+        if len(self.bond_length)>0:
+            lenght_list=self.bond_length
+
         #declare bonds coefficient
         f.write("Bond Coeffs" + "\n")
         f.write("\n")
@@ -171,10 +178,8 @@ class Protein_Template:
     def get_bond_length(self, type_mol : Literal["prion", "healthy"]):
 
         connections = self.connection
-        K = self.K
         lenght_list, type_list = [], []
        
-
         #set the right positions list
         if type_mol=="prion":
             atom_list = self.prion_position
@@ -200,6 +205,10 @@ class Protein_Template:
             #length are computed here
             lenght = math.sqrt((atom1_pos[0]-atom2_pos[0])**2 + (atom1_pos[1]-atom2_pos[1])**2)
             lenght_list.append(lenght)
+
+        if len(self.bond_length)>0:
+            print("used stored bond length and not the computed one")
+            lenght_list=self.bond_length
         
         return lenght_list, type_list
 

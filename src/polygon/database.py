@@ -13,13 +13,17 @@ class Database():
 
     def __init__(self, filename):
         self.db_parameter = sql.SqliteDict(
-            str(filename)+".sqlite", tablename="parameter")
+            f'{str(filename)}.sqlite', tablename="parameter"
+        )
+
         self.db_polygon = sql.SqliteDict(
-            str(filename)+".sqlite", tablename="polygon")
+            f'{str(filename)}.sqlite', tablename="polygon"
+        )
+
         self.db_pairs = sql.SqliteDict(
-            str(filename)+".sqlite", tablename="pairs")
+            f'{str(filename)}.sqlite', tablename="pairs")
         self.db_lock = sql.SqliteDict(
-            str(filename)+".sqlite", tablename="lock")
+            f'{str(filename)}.sqlite', tablename="lock")
 
     ##########################
     #         Polygon        #
@@ -32,8 +36,10 @@ class Database():
         self.db_parameter["is_simple"] = is_simple
         self.db_parameter.commit()
 
-    def add_polygon(self, node_pos, dict_data={}, commit=True):
+    def add_polygon(self, node_pos, dict_data = None, commit=True):
 
+        if dict_data is None:
+            dict_data = {}
         assert node_pos[0] == node_pos[-1], "should be in polygon format and loop back"
         #assert not key in self.db.keys(), "this polygon is already in the database"
         dict_data["struct"] = node_pos
@@ -73,14 +79,14 @@ class Database():
 
     def add_polygon_comparions_list(self, hash_healthy, list_hash_prion: list[int], commit=True):
 
-        assert all([type(h) == int for h in list_hash_prion]
-                   ), "list_hash_prion should be a list of int"
+        assert all(
+            type(h) == int for h in list_hash_prion
+        ), "list_hash_prion should be a list of int"
 
         dict_data_actual = self.db_polygon[hash_healthy]
         # if the list doesn't exsist
-        if not 'compared_to' in dict_data_actual:
+        if 'compared_to' not in dict_data_actual:
             dict_data_actual['compared_to'] = set(list_hash_prion)
-            self.db_polygon[hash_healthy] = dict_data_actual
         else:
             already_checked: set = dict_data_actual['compared_to']
             for prion_hash in list_hash_prion:
@@ -88,8 +94,7 @@ class Database():
                     print("prion was already in the checked list")
                 already_checked.add(prion_hash)
             dict_data_actual['compared_to'] = already_checked
-            self.db_polygon[hash_healthy] = dict_data_actual
-
+        self.db_polygon[hash_healthy] = dict_data_actual
         if commit:
             self.db_polygon.commit()
 
@@ -119,7 +124,7 @@ class Database():
 
     def check_if_pair_already_tested(self, hash_healthy, hash_prion):
         # if nothing was compared to it then return false
-        if not 'compared_to' in self.db_polygon[hash_healthy]:
+        if 'compared_to' not in self.db_polygon[hash_healthy]:
             return False
         # if there was some prion comparison done then check
         return int(hash_prion) in self.db_polygon[hash_healthy]['compared_to']
@@ -128,14 +133,11 @@ class Database():
 
         assert healthy_pos[0] == healthy_pos[-1], "should be in polygon format and loop back"
         # if not already there then we can just add the new pair
-        if not hash(tuple(healthy_pos)) in self.db_pairs:
-            dic_all_prions = {}
-            dic_all_prions["struct_healthy"] = healthy_pos
+        if hash(tuple(healthy_pos)) not in self.db_pairs:
+            dic_all_prions = {"struct_healthy": healthy_pos}
             for prion, data in zip(list_prion_pos, list_data_prion):
                 data['struct'] = prion
                 dic_all_prions[hash(tuple(prion))] = data
-            self.db_pairs[hash(tuple(healthy_pos))] = dic_all_prions
-        # else the pair already exist so we want to add it
         else:
             dic_all_prions = self.db_pairs[hash(tuple(healthy_pos))]
             for prion, data in zip(list_prion_pos, list_data_prion):
@@ -143,8 +145,7 @@ class Database():
                     print("prion was already in the pair, it will be overwritten")
                 data['struct'] = prion
                 dic_all_prions[hash(tuple(prion))] = data
-            self.db_pairs[hash(tuple(healthy_pos))] = dic_all_prions
-
+        self.db_pairs[hash(tuple(healthy_pos))] = dic_all_prions
         if commit:
             self.db_pairs.commit()
 
@@ -166,6 +167,20 @@ class Database():
 
     def get_hash_paired_healthy(self):
         return list(self.db_pairs.keys())
+
+    def get_healthy_from_pair(self, key_healthy):
+        return self.db_pairs[key_healthy]['struct_healthy']
+
+    def get_prion_list_from_pair(self, key_healthy):
+        list_prion_key = []
+        list_prion_pos = []
+        for key in self.db_pairs[key_healthy].keys():
+            if key != 'struct_healthy':
+                list_prion_key.append(list_prion_key)
+                list_prion_pos.append(
+                    self.db_pairs[key_healthy][key]['struct'])
+
+        return list_prion_key, list_prion_pos
 
     ##########################
     #    Pairs  solution     #
@@ -209,23 +224,31 @@ class Database():
     def get_all_sol(self, key_healthy, key_prion):
         list_key = []
         if "sols" in self.db_pairs[key_healthy][key_prion]:
-            list_sol_key = list(self.db_pairs[key_healthy][key_prion]["sols"].keys())
+            list_sol_key = list(
+                self.db_pairs[key_healthy][key_prion]['sols'].keys())
+
             if 'nb_try' in list_sol_key:
-                print(list_sol_key)
                 list_sol_key.remove('nb_try')
-            if len(list_sol_key)>0:
-                for key in  list_sol_key:
-                    if len(self.db_pairs[key_healthy][key_prion]["sols"][key]['inside_node'])>0:
-                        list_key.append(key)
-        return list_key, [self.db_pairs[key_healthy][key_prion]["sols"][key] for key in list_key ] 
-            
+            if list_sol_key:
+                list_key.extend(
+                    key
+                    for key in list_sol_key
+                    if len(
+                        self.db_pairs[key_healthy][key_prion]["sols"][key][
+                            'inside_node'
+                        ]
+                    )
+                    > 0
+                )
+
+        return list_key, [self.db_pairs[key_healthy][key_prion]["sols"][key] for key in list_key]
 
     def load_protein_pair(self, key_healthy, key_prion, sol_key):
 
         pair_data = self.db_pairs[key_healthy][key_prion]
-        healthy_pos = self.db_pairs[key_healthy]['struct_healthy']
         prion_pos = pair_data['struct']
         translation = pair_data['translation']
+        healthy_pos = self.db_pairs[key_healthy]['struct_healthy']
         inside_node = pair_data['sols'][sol_key]['inside_node']
         conn = pair_data['sols'][sol_key]['conn']
         protein_pair = protein_template.Protein_Template()
@@ -238,15 +261,13 @@ class Database():
 
         healthy_pos_protein_format = []
         prion_pos_protein_format = []
-        conn_protein_format = []
-
         # add outside node
         for i in range(len(pos_healthy_trans)):
             healthy_pos_protein_format.append(
                 [0, pos_healthy_trans[i][0], pos_healthy_trans[i][1]])
             prion_pos_protein_format.append(
                 [0, prion_pos[i][0], prion_pos[i][1]])
-        print(inside_node)
+  
         in_healthy_x, in_healthy_y = inside_node[0], inside_node[1]
         in_prion_x, in_prion_y = inside_node[2], inside_node[3]
         # add inside node
@@ -254,11 +275,12 @@ class Database():
             healthy_pos_protein_format.append(
                 [1, in_healthy_x[i], in_healthy_y[i]])
             prion_pos_protein_format.append([1, in_prion_x[i], in_prion_y[i]])
-        # define all the edges/interaction
-        for pair in conn:
-            conn_protein_format.append([pair[0]-1, pair[1]-1])
-        for i in range(len(healthy_pos)-1):
-            conn_protein_format.append([i, (i+1) % (len(healthy_pos)-1)])
+        conn_protein_format = [[pair[0]-1, pair[1]-1] for pair in conn]
+        conn_protein_format.extend(
+            [i, (i + 1) % (len(healthy_pos) - 1)]
+            for i in range(len(healthy_pos) - 1)
+        )
+
         # format in numpy array
         healthy_pos_protein_format = np.array(healthy_pos_protein_format)
         prion_pos_protein_format = np.array(prion_pos_protein_format)
@@ -289,75 +311,88 @@ class Database():
         self.db_parameter.commit()
 
     def add_stability(self, key_healthy, key_prion, sol_key, mbr_triplet_healthy, mbr_triplet_prion):
-        #no need to open it slowly like that
+        # no need to open it slowly like that
         pair_dict = self.db_pairs[key_healthy]
         pair_prion = pair_dict[key_prion]
         pair_solution = pair_prion['sols']
         solution = pair_solution[sol_key]
-        #store the triplet
-        solution['stability_prion']   = mbr_triplet_prion
+        # store the triplet
+        solution['stability_prion'] = mbr_triplet_prion
         solution['stability_healthy'] = mbr_triplet_healthy
-        #waste of time only the last one is probably needed
+        # waste of time only the last one is probably needed
         pair_solution[sol_key] = solution
         pair_prion['sols'] = pair_solution
         pair_dict[key_prion] = pair_prion
         self.db_pairs[key_healthy] = pair_dict
-        #commit
+        # commit
         self.db_pairs.commit()
 
-    def add_RMS_stability(self, key_healthy, key_prion, sol_key,temperature_list,  healthy_angle_list, prion_angle_list, RMS_hp):
-        #no need to open it slowly like that
+    def add_RMS_stability(self, key_healthy, key_prion, sol_key, temperature_list,  healthy_angle_list, prion_angle_list, RMS_hp):
+        # no need to open it slowly like that
         pair_dict = self.db_pairs[key_healthy]
         pair_prion = pair_dict[key_prion]
         pair_solution = pair_prion['sols']
         solution = pair_solution[sol_key]
-        #store the triplet
-        solution['RMS_stability_temp']   = temperature_list
+        # store the triplet
+        solution['RMS_stability_temp'] = temperature_list
         solution['RMS_stability_healthy'] = healthy_angle_list
-        solution['RMS_stability_prion']   = prion_angle_list
+        solution['RMS_stability_prion'] = prion_angle_list
         solution['RMS_hp'] = RMS_hp
-        #waste of time only the last one is probably needed
+        # waste of time only the last one is probably needed
         pair_solution[sol_key] = solution
         pair_prion['sols'] = pair_solution
         pair_dict[key_prion] = pair_prion
         self.db_pairs[key_healthy] = pair_dict
-        #commit
+        # commit
+        self.db_pairs.commit()
+
+    ##########################
+    #     NEB computation    #
+    ##########################
+
+    def _add_NEB(self, key_healthy, key_prion, sol_key, reaction_coordinate, energy_list, coord_key, energy_key):
+        # no need to open it slowly like that
+        pair_dict = self.db_pairs[key_healthy]
+        pair_prion = pair_dict[key_prion]
+        pair_solution = pair_prion['sols']
+        solution = pair_solution[sol_key]
+        # store the triplet
+        solution[coord_key] = reaction_coordinate
+        solution[energy_key] = energy_list
+        # waste of time only the last one is probably needed
+        pair_solution[sol_key] = solution
+        pair_prion['sols'] = pair_solution
+        pair_dict[key_prion] = pair_prion
+        self.db_pairs[key_healthy] = pair_dict
+        # commit
         self.db_pairs.commit()
 
     def add_NEB_HP(self, key_healthy, key_prion, sol_key, reaction_coordinate, energy_list):
-        #no need to open it slowly like that
-        pair_dict = self.db_pairs[key_healthy]
-        pair_prion = pair_dict[key_prion]
-        pair_solution = pair_prion['sols']
-        solution = pair_solution[sol_key]
-        #store the triplet
-        solution['NEB_HP_reaction_coordinate']   = reaction_coordinate
-        solution['NEB_HP_energy'] = energy_list
-        #waste of time only the last one is probably needed
-        pair_solution[sol_key] = solution
-        pair_prion['sols'] = pair_solution
-        pair_dict[key_prion] = pair_prion
-        self.db_pairs[key_healthy] = pair_dict
-        #commit
-        self.db_pairs.commit() 
-
+        self._add_NEB(key_healthy, key_prion, sol_key, reaction_coordinate, energy_list, 'NEB_HP_reaction_coordinate', 'NEB_HP_energy')
+        
 
     def delete_NEB_HP(self, key_healthy, key_prion, sol_key):
-        #no need to open it slowly like that
+        # no need to open it slowly like that
         pair_dict = self.db_pairs[key_healthy]
         pair_prion = pair_dict[key_prion]
         pair_solution = pair_prion['sols']
         solution = pair_solution[sol_key]
-        #store the triplet
-        del solution['NEB_HP_reaction_coordinate']  
+        # store the triplet
+        del solution['NEB_HP_reaction_coordinate']
         del solution['NEB_HP_energy']
-        #waste of time only the last one is probably needed
+        # waste of time only the last one is probably needed
         pair_solution[sol_key] = solution
         pair_prion['sols'] = pair_solution
         pair_dict[key_prion] = pair_prion
         self.db_pairs[key_healthy] = pair_dict
-        #commit
-        self.db_pairs.commit() 
+        # commit
+        self.db_pairs.commit()
+
+
+    def add_NEB_HP_PP(self, key_healthy, key_prion, sol_key, reaction_coordinate, energy_list, pos_list, angle_list):
+        self._add_NEB(key_healthy, key_prion, sol_key, reaction_coordinate, energy_list, 'NEB_HP_PP_reaction_coordinate', 'NEB_HP_PP_energy')
+        self._add_NEB(key_healthy, key_prion, sol_key, reaction_coordinate, pos_list, 'NEB_HP_PP_reaction_coordinate', 'NEB_HP_PP_pos_list')
+        self._add_NEB(key_healthy, key_prion, sol_key, reaction_coordinate, angle_list, 'NEB_HP_PP_reaction_coordinate', 'NEB_HP_PP_angle_list')
 
     ##########################
     #          lock          #
@@ -389,10 +424,8 @@ class Database():
             active_lock.remove(hash)
             self.db_lock["locked"] = active_lock
             self.db_lock.commit()
-            print("hash: " + str(hash) + " lock cleared")
-            return True
-        else:
-            return True
+            print(f"hash: {str(hash)} lock cleared")
+        return True
 
     def is_locked(self, hash):
         assert type(hash) == int, "please pass a int"

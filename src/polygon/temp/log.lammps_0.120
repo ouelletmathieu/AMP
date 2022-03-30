@@ -1,0 +1,13 @@
+LAMMPS (29 Oct 2020)
+Processor partition = 120
+# LAMMPS task file for neb
+
+      dimension   2
+     atom_style bond
+     boundary   f f p
+     bond_style harmonic
+     atom_modify	map array sort 0 0.0
+
+     variable  u uloop 100
+ERROR: Universe/uloop variable count < # of partitions (../variable.cpp:263)
+Last command:      variable  u uloop 100

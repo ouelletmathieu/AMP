@@ -30,8 +30,8 @@ class MyLammps:
         self.L.command("atom_style bond")
         self.L.command("boundary f f p")
         self.L.command("bond_style harmonic")
-        self.L.command("read_data "+ file_path) 
-        self.L.command("fix " + self.id_counter.next() + " all enforce2d")
+        self.L.command(f"read_data {file_path}")
+        self.L.command(f"fix {self.id_counter.next()} all enforce2d")
 
     def create_molecule_3d(self,file_path):
         """read a Lammps file and create a molecule:
@@ -42,7 +42,7 @@ class MyLammps:
         self.L.command("atom_style bond")
         self.L.command("boundary f f f")
         self.L.command("bond_style harmonic")
-        self.L.command("read_data "+ file_path) 
+        self.L.command(f"read_data {file_path}") 
         
     
     
@@ -65,10 +65,10 @@ class MyLammps:
         self.L.command("bond_style harmonic")
         self.L.command("pair_style lj/cut 2.5")
 
-        
-        self.L.command("read_data "+ file_path) 
-        self.L.command("fix " + self.id_counter.next() + " all enforce2d")
-        self.L.command("fix " + self.id_counter.next() + " all nve")      
+
+        self.L.command(f"read_data {file_path}")
+        self.L.command(f"fix {self.id_counter.next()} all enforce2d")
+        self.L.command(f"fix {self.id_counter.next()} all nve")
         #sigma = 0.89*dist_emin
         self.L.command("pair_coeff * * 1.0 1.0  2.5" )
         
@@ -82,14 +82,17 @@ class MyLammps:
         """
         
         logger.log(0)
-        self.L.command("fix " + self.id_counter.next() + " all   nve")   ###NVE ensemble
-        self.L.command("fix " + self.id_counter.next() + " all enforce2d")
-        self.L.command("thermo " + str(100))
-        self.L.command("minimize 0.000001 0.000001 "+ str(max_iter) + "  " + str(100*max_iter)  )
-        
+        self.L.command(f"fix {self.id_counter.next()} all   nve")
+        self.L.command(f"fix {self.id_counter.next()} all enforce2d")
+        self.L.command('thermo 100')
+        self.L.command(
+            f"minimize 0.000001 0.000001 {str(max_iter)}  {str(100*max_iter)}"
+        )
+
+
         logger.log(1)
 
-    def run_brownian(self, temperature, damping, max_time, n_step, n_plot, logger, stop_change_conf = False, id_conf =[], square_angle_sum = 0, random_seed = True ):
+    def run_brownian(self, temperature, damping, max_time, n_step, n_plot, logger, stop_change_conf = False, id_conf = None, square_angle_sum = 0, random_seed = True):
         """run langevin dynamic 
 
         Args:
@@ -107,28 +110,46 @@ class MyLammps:
         Returns:
             [float]: return the max time the simulation reached if stop_change_conf is true it return the time 
         """
+        if id_conf is None:
+            id_conf = []
         self.L.command("thermo 100000")
-        
-        self.L.command("fix " + self.id_counter.next() + " all   nve")   ###NVE ensemble
-        self.L.command("fix " + self.id_counter.next() + " all enforce2d")
-        
-        if random_seed:
-            self.L.command("fix " + self.id_counter.next() + " all langevin "+ str(temperature) + " " + str(temperature)+ " " + str(damping)+ " " + str(random.randint(1,100000)))
-        else:
-            self.L.command("fix " + self.id_counter.next() + " all langevin "+ str(temperature) + " " + str(temperature)+ " " + str(damping)+ " " + str(1) )
-               
-        self.L.command("timestep " + str(max_time/n_step))
 
-        step_per_plot = int(n_step/n_plot) 
+        self.L.command(f"fix {self.id_counter.next()} all   nve")
+        self.L.command(f"fix {self.id_counter.next()} all enforce2d")
+
+        if random_seed:
+            self.L.command(
+                f"fix {self.id_counter.next()} all langevin {str(temperature)} "
+                + str(temperature)
+                + " "
+                + str(damping)
+                + " "
+                + str(random.randint(1, 100000))
+            )
+
+        else:
+            self.L.command(
+                f"fix {self.id_counter.next()} all langevin {str(temperature)} "
+                + str(temperature)
+                + " "
+                + str(damping)
+                + " "
+                + str(1)
+            )
+
+
+        self.L.command(f"timestep {str(max_time/n_step)}")
+
+        step_per_plot = int(n_step/n_plot)
         #self.L.command("thermo " + str(int(step_per_plot)))
-        
+
         for i in range(n_plot):
 
             try:
-                self.L.command("run " + str(step_per_plot))
+                self.L.command(f"run {step_per_plot}")
                 time = i*step_per_plot*max_time/n_step
                 logger.log(time)
-                
+
                 if stop_change_conf:
                     angle_distance = logger.get_last_distance( -1, id_to_compare = id_conf)
                     if angle_distance > square_angle_sum:
@@ -139,7 +160,7 @@ class MyLammps:
                 print(inst.args)     # arguments stored in .args
                 print(inst)
                 return -1
-        
+
         return max_time
         
     def command(self,command):
@@ -151,15 +172,13 @@ class MyLammps:
         """get the potential energy of the system at the current time 
         """
         self.L.run(0)
-        e = self.L.eval("pe")
-        return e
+        return self.L.eval("pe")
     
     def getEnergyKin(self):
         """get the kinetic energy of the system at the current time   
         """
         self.L.run(0)
-        e = self.L.eval("ke")
-        return e    
+        return self.L.eval("ke")    
 
     def lammps(self):
         """get the lammps instance

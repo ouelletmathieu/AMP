@@ -71,11 +71,12 @@ class Logger:
         
         
     def get_last_distance(self, index, id_to_compare = None):
-        total = 0
-        for angle1, angle2 in zip(self.angle_list_to_compare[id_to_compare],self.angle_list[index]):
-            total+=(angle1-angle2)**2
-        
-        return total
+        return sum(
+            (angle1 - angle2) ** 2
+            for angle1, angle2 in zip(
+                self.angle_list_to_compare[id_to_compare], self.angle_list[index]
+            )
+        )
         
   
 
@@ -84,18 +85,22 @@ class Logger:
     ###################################
     
     
-    def plot_positions(self, time_list = [], index_list = []):
+    def plot_positions(self, time_list = None, index_list = None):
         
+        if time_list is None:
+            time_list = []
+        if index_list is None:
+            index_list = []
         if len(time_list)!=0:
             print("not implemented yet")
             raise NotImplementedError("not implemented yet")
-        
+
         if self.is_2d:
             if len(index_list)!=0:
-                
+
                 for i in range(len(index_list)):
                     plt.scatter(self.struct_list[0][index_list[i]],self.struct_list[1][index_list[i]])
-                
+
                 plt.show()
         else:
 
@@ -112,43 +117,46 @@ class Logger:
             the conformation need to be known in advance by the logger object 
         """
         angle_dif_formatted = self._get_angle_difference(id_to_compare)
-        
+
         for i in range(len(angle_dif_formatted)):
             plt.plot(self.time_list, angle_dif_formatted[i])
-            
-        if id_to_compare==None:
+
+        if id_to_compare is None:
             plt.title("angle difference with t=0" , fontsize=17)
         else:
-            plt.title("angle difference conf= " + str(id_to_compare) , fontsize=17)
+            plt.title(f"angle difference conf= {str(id_to_compare)}", fontsize=17)
         plt.xlabel('time (time)', fontsize=15)
         plt.ylabel('rad difference', fontsize=15)
         plt.show()    
         
     
      
-    def plot_angular_sum_distance(self, id_to_compare_list = [] ):
+    def plot_angular_sum_distance(self, id_to_compare_list = None):
         """compute and display the mean square angular displacement
         """
         
+        if id_to_compare_list is None:
+            id_to_compare_list = []
         list_of_list_of_distance = {id_:[] for id_ in id_to_compare_list}
-        
+
         for id_tcp in id_to_compare_list:
-            
+
             lst = list_of_list_of_distance[id_tcp]
-            
+
             angle_formatted = self._get_angle_difference( id_to_compare = id_tcp )
-            
+
             for t in range(len(self.time_list) ):
-                
-                total_dist = 0
-                
-                for i in range(len(angle_formatted)):
-                    total_dist += (angle_formatted[i][t])**2
-                    
+
+                total_dist = sum(
+                    (angle_formatted[i][t]) ** 2
+                    for i in range(len(angle_formatted))
+                )
+
+
                 lst.append(total_dist)
-        
+
             plt.plot(self.time_list, lst, label=str(id_tcp))
-            
+
         plt.title("mean square angular displacement" , fontsize=17)
         plt.xlabel('time (time)', fontsize=15)
         plt.ylabel('sqared rad', fontsize=15)
@@ -156,8 +164,10 @@ class Logger:
         
         
         
-    def plot_energy(self,  index_list = []):
+    def plot_energy(self, index_list = None):
         
+        if index_list is None:
+            index_list = []
         if len(index_list)==0:
             plt.plot(self.time_list, self.energy_list,  label='potential')
             plt.plot(self.time_list, self.energyKin_list,  label='kinetic')
@@ -178,16 +188,16 @@ class Logger:
     def _get_angle_difference(self, id_to_compare = None ):
         
         angle_n = len(self.angle_list[0])
-        angle_formatted = [[] for i in range(angle_n)]
+        angle_formatted = [[] for _ in range(angle_n)]
 
         for i in range(len(self.angle_list)):
             for j in range(angle_n):
                 
-                if id_to_compare==None:
+                if id_to_compare is None:
                     angle_formatted[j].append(self.angle_list[i][j] - self.angle_list[0][j] )
                 else:
                     angle_formatted[j].append(self.angle_list[i][j] - self.angle_list_to_compare[id_to_compare][j] )
-        
+
         return angle_formatted
 
 
